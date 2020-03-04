@@ -19,5 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('pi_generator/', include('pi_generator.urls')),
     path('polls/', include('polls.urls')),
+    path('data/', include('data.urls')),
     path('admin/', admin.site.urls),
 ]
