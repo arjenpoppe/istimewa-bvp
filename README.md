@@ -9,7 +9,7 @@
 > This project collects and transforms data to extract performance indicators. It also has a nice user interface.
 
 ***Template that will probably be used: SB ADMIN 2***
-<a href="https://github.com/BlackrockDigital/startbootstrap-sb-admin-2"><img src="https://blackrockdigital.github.io/startbootstrap-sb-admin-2/" title="SB ADMIN 2" alt="SB ADMIN 2"></a>
+<a href="https://github.com/BlackrockDigital/startbootstrap-sb-admin-2"><img src="https://camo.githubusercontent.com/69635cfa36b0fdcaea41cfbf4316f263d9bad1a5/68747470733a2f2f7374617274626f6f7473747261702e636f6d2f6173736574732f696d672f73637265656e73686f74732f7468656d65732f73622d61646d696e2d322e706e67" title="SB ADMIN 2" alt="SB ADMIN 2"></a>
 
 
 ## Table of Contents (Optional)
