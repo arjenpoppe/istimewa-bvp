@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('pi_generator/', include('pi_generator.urls')),
     path('polls/', include('polls.urls')),
     path('admin/', admin.site.urls),
 ]
