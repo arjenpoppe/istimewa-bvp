@@ -1,4 +1,4 @@
-<a href="http://fvcproductions.com"><img src="https://avatars1.githubusercontent.com/u/4284691?v=3&s=200" title="FVCproductions" alt="FVCproductions"></a>
+<a href="http://www.istimewa-elektro.nl/home"><img src="http://www.istimewa-elektro.nl/images/istimewa_stork_logo.png" title="Istimewa Elektro" alt="Istimewa Elektro"></a>
 
 <!-- [![FVCproductions](https://avatars1.githubusercontent.com/u/4284691?v=3&s=200)](http://fvcproductions.com) -->
 
@@ -9,13 +9,10 @@
 > This project collects and transforms data to extract performance indicators. It also has a nice user interface.
 
 ***Template that will probably be used: SB ADMIN 2***
-
-[![INSERT YOUR GRAPHIC HERE](https://blackrockdigital.github.io/startbootstrap-sb-admin-2/)]()
+<a href="https://github.com/BlackrockDigital/startbootstrap-sb-admin-2"><img src="https://blackrockdigital.github.io/startbootstrap-sb-admin-2/" title="SB ADMIN 2" alt="SB ADMIN 2"></a>
 
 
 ## Table of Contents (Optional)
-
-> If your `README` has a lot of info, section headers might be nice.
 
 - [Installation](#installation)
 - [Features](#features)
