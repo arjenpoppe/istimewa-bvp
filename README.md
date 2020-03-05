@@ -1,9 +1,5 @@
 <a href="http://www.istimewa-elektro.nl/home"><img src="http://www.istimewa-elektro.nl/images/istimewa_stork_logo.png" title="Istimewa Elektro" alt="Istimewa Elektro"></a>
 
-<!-- [![FVCproductions](https://avatars1.githubusercontent.com/u/4284691?v=3&s=200)](http://fvcproductions.com) -->
-
-***INSERT GRAPHIC HERE (include hyperlink in image)***
-
 # Istimewa Elektro BVP
 
 > This project collects and transforms data to extract performance indicators. It also has a nice user interface.
