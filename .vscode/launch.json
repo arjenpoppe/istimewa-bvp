@@ -14,7 +14,6 @@
                 "runserver",
             ],
             "django": true,
-            "console": "integratedTerminal",
         }
     ]
 }
