@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'dashboard.apps.DashboardConfig',
     'pi_generator.apps.PiGeneratorConfig',
     'polls.apps.PollsConfig',
     'django.contrib.admin',
