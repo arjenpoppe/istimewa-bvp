@@ -8,7 +8,8 @@ class TargetInline(admin.TabularInline):
 
 class ValueInline(admin.TabularInline):
     model = Value
-    list_display = ('value', 'timestamp')
+    readonly_fields = ('timestamp',)
+    extra = 1
 
 
 class PerformanceIndicatorAdmin(admin.ModelAdmin):
