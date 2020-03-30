@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}{% block page_header %}Upload Data{% endblock page_header %}{% endblock title %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="myfile">
+    <button type="submit">Upload</button>
+  </form>
+{% endblock %}
