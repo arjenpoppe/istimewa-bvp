@@ -1,3 +1,11 @@
 from django.contrib import admin
+from .models import Ultimo
 
-# Register your models here.
+
+class UltimoAdmin(admin.ModelAdmin):
+    list_display = ('code', 'code_contract', 'voortgangsstatus', 'stremming_ja')
+
+
+
+admin.site.register(Ultimo, UltimoAdmin)
+

@@ -71,3 +71,9 @@ class Ultimo(models.Model):
     code_installatie3 = models.CharField(max_length=30, blank=True, null=True)
     gevalideerd_door_rws = models.CharField(max_length=10, blank=True, null=True)
     ontvangen_rws = models.CharField(max_length=30, blank=True, null=True)
+
+    def __str__(self):
+        return self.code
+
+    def _testthingy(self):
+        return'test'

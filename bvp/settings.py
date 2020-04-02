@@ -95,7 +95,7 @@ DATABASES = {
     },
     # 'default': { # test with database on network share
     #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     'NAME': os.path.join('\\\\192.168.2.50\\media\\network_db_test', 'db.sqlite3'),
     # }
 }
 
