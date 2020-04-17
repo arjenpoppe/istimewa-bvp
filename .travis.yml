@@ -1,0 +1,26 @@
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+
+# services that are required to run
+services:
+  - mysql
+
+# install required dependencies
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS istimewa-bvp;'
+
+# command to run tests
+script:
+  - python manage.py test
+
+deploy:
+  provider: script
+  script: bash scripts/deploy.sh
+  on:
+    branch: master

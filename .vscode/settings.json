@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\arjen\\envs\\django-bvp\\Scripts\\python.exe",
+    "python.pythonPath": "C:\\Bitnami\\DJANGO~1.12-\\python\\python.exe",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.linting.pylintArgs": [ "--load-plugins=pylint_django" ],
