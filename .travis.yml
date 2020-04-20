@@ -1,24 +1,26 @@
 language: python
+
 python:
-  - "3.6"
-  - "3.7"
-  - "3.8"
+- '3.6'
+- '3.7'
+- '3.8'
 
-# services that are required to run
 services:
-  - mysql
+- mysql
 
-# install required dependencies
 install:
-  - pip install -r requirements.txt
+- pip install -r requirements.txt
 
-# command to run tests
 script:
-  - python manage.py collectstatic
-  - python manage.py test
+- python manage.py collectstatic
+- python manage.py test
 
 deploy:
   provider: script
-  script: bash scripts/deploy.sh
+  script: bash .travis/scripts/deploy.sh
   on:
     branch: release
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_db2095f63ba3_key -iv $encrypted_db2095f63ba3_iv
+  -in deploy_rsa.enc -out deploy_rsa -d
