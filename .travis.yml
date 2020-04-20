@@ -14,5 +14,5 @@ install:
 
 # command to run tests
 script:
-  - py manage.py collectstatic
+  - python manage.py collectstatic
   - python manage.py test
