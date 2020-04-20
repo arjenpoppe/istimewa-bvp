@@ -25,7 +25,7 @@ SECRET_KEY = 'j-_q3ej^$5fv166jc$#mw6enup%^l@e24m3w&ec71@8r)s&g1h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['SERVER-IP', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['SERVER-IP', 'localhost', '127.0.0.1', '192.168.2.11']
 
 
 # Application definition
@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'bvp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django',
+        'NAME': 'bvp',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -140,4 +140,4 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
