@@ -23,7 +23,7 @@ script:
 - python manage.py test
 
 deploy:
-  cleanup: false
+  skip_cleanup: true
   provider: script
   script: bash .travis/scripts/deploy.sh
   on:
