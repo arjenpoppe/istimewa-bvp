@@ -9,11 +9,11 @@ let ajax_call = function (endpoint, request_parameters) {
     $.getJSON(endpoint, request_parameters)
         .done(response => {
             // fade out the artists_div, then:
-            vpis_div.fadeTo('slow', 0).promise().then(() => {
+            vpis_div.fadeTo('fast', 0).promise().then(() => {
                 // replace the HTML contents
                 vpis_div.html(response['html_from_view'])
                 // fade-in the div with new contents
-                vpis_div.fadeTo('slow', 1)
+                vpis_div.fadeTo('fast', 1)
                 // stop animating search icon
                 search_icon.removeClass('blink')
             })
