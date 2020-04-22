@@ -4,6 +4,7 @@
     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
       <thead>
         <tr>
+          <th>ID</th>
           <th>Naam</th>
           <th>Omschrijving</th>
           <th>Meeteenheid</th>
@@ -12,6 +13,7 @@
       </thead>
       <tfoot>
         <tr>
+          <th>ID</th>
           <th>Naam</th>
           <th>Omschrijving</th>
           <th>Meet eenheid</th>
@@ -21,6 +23,7 @@
       <tbody>
         {% for vpi in vpis %}
           <tr>
+            <td>{{ vpi.id }}</td>
             <td>{{ vpi.name }}</td>
             <td>{{ vpi.description }}</td>
             <td>{{ vpi.measuring_unit }}</td>
