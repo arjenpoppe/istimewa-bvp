@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pi_generator', '0001_initial'),
+        ('vpi', '0001_initial'),
     ]
 
     operations = [
@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='performanceindicator',
             name='sources',
-            field=models.ManyToManyField(to='pi_generator.Source'),
+            field=models.ManyToManyField(to='vpi.Source'),
         ),
         migrations.AlterField(
             model_name='performanceindicator',

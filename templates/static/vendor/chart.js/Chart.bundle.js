@@ -1961,7 +1961,7 @@ var helpers = {
 	},
 
 	/**
-	 * Basic javascript inheritance based on the model created in Backbone.js
+	 * Basic js inheritance based on the model created in Backbone.js
 	 */
 	inherits: function(extensions) {
 		var me = this;

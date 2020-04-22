@@ -38,11 +38,11 @@
     // Bootstrap specific; comment the following selector out
     //
     // Don't show links that are fragment identifiers,
-    // or use the `javascript:` pseudo protocol
+    // or use the `js:` pseudo protocol
     //
 
     //a[href^="#"]::after,
-    //a[href^="javascript:"]::after {
+    //a[href^="js:"]::after {
     // content: "";
     //}
 

@@ -4,7 +4,6 @@
 <html lang="en">
 
 <head>
-
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -21,6 +20,7 @@
   <link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}">
   <link rel="stylesheet" type="text/css" href="{% static 'css/sb-admin-2.min.css' %}">
 
+  <link href="{% static "vpi/main.css" %}" rel="stylesheet" media="screen">
 </head>
 
 <body id="page-top">
@@ -49,51 +49,41 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
 
-      <!-- Nav Item - KPIs/VPIs -->
+      <!-- Nav Item - performance indicators -->
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'pi_generator:index' %}">
+        <a class="nav-link" href="{% url 'vpi:index' %}">
           <i class="fas fa-fw fa-file-alt"></i>
-          <span>KPIs / VPIs</span></a>
+          <span>Zoek VPI's</span></a>
       </li>
 
-      <!-- Nav Item - Data process -->
+      <!-- Nav Item - reporting -->
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'data:index' %}">
+        <a class="nav-link" href="{% url 'reporting:index' %}">
           <i class="fas fa-fw fa-cogs"></i>
-          <span>Data process</span></a>
+          <span>Rapportages</span></a>
       </li>
 
       <!-- Divider -->
       <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Forms menu
-      </div>
       
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-file-alt"></i>
-          <span>Forms</span>
+          <span>Data invoeren</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Available forms:</h6>
+            <h6 class="collapse-header">invoer methoden:</h6>
+            <a class="collapse-item" href="{% url 'forms:index' %}">Formulieren</a>
+            <a class="collapse-item" href="{% url 'forms:index' %}">Databestanden</a>
             <a class="collapse-item" href="{% url 'forms:index' %}">Prestatiemeting</a>
-            <a class="collapse-item" href="{% url 'forms:index' %}">CO2 emissions</a>
-            <a class="collapse-item" href="{% url 'forms:index' %}">New PI...</a>
           </div>
         </div>
       </li>
 
       <!-- Divider -->
       <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Admin menu
-      </div>
       
       <!-- Nav Item - Admin menu -->
       <li class="nav-item">
@@ -104,8 +94,9 @@
         <div id="collapseAdmin" class="collapse" aria-labelledby="headingAdmin" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Options:</h6>
-            <a class="collapse-item" href="{% url 'admin:index' %}">Admin index</a>
-            <a class="collapse-item" href="{% url 'data:index' %}">blabla..</a>
+            <a class="collapse-item" href="{% url 'admin:index' %}">Systeem info</a>
+            <a class="collapse-item" href="{% url 'admin:index' %}">Data bewerken</a>
+              <a class="collapse-item" href="{% url 'admin:index' %}">Systeemlogs</a>
           </div>
         </div>
       </li>
@@ -373,6 +364,11 @@
   <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"
+  integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+  crossorigin="anonymous"></script>
+
   <!-- Core plugin JavaScript-->
   <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
 
@@ -385,6 +381,8 @@
   <!-- Page level custom scripts -->
   <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
   <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+
+  <script type="text/javascript" src="{% static "vpi/js/main.js" %}"></script>
 
 </body>
 

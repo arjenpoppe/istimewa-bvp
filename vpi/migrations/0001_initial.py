@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('value', models.CharField(max_length=100)),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('performance_indicator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pi_generator.PerformanceIndicator')),
+                ('performance_indicator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vpi.PerformanceIndicator')),
             ],
         ),
         migrations.CreateModel(
@@ -60,15 +60,15 @@ class Migration(migrations.Migration):
                 ('yellow', models.IntegerField()),
                 ('red', models.IntegerField()),
                 ('project_number', models.IntegerField(null=True)),
-                ('performance_indicator', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='pi_generator.PerformanceIndicator')),
+                ('performance_indicator', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='vpi.PerformanceIndicator')),
             ],
         ),
         migrations.CreateModel(
             name='SourceForPerformanceIndicator',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('performance_indicator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pi_generator.PerformanceIndicator')),
-                ('source', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pi_generator.Source')),
+                ('performance_indicator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vpi.PerformanceIndicator')),
+                ('source', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vpi.Source')),
             ],
         ),
         migrations.CreateModel(
@@ -76,8 +76,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('number', models.IntegerField(primary_key=True, serialize=False)),
                 ('description', models.TextField(max_length=1000)),
-                ('performance_indicator', models.ManyToManyField(to='pi_generator.PerformanceIndicator')),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pi_generator.Project')),
+                ('performance_indicator', models.ManyToManyField(to='vpi.PerformanceIndicator')),
+                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vpi.Project')),
             ],
         ),
     ]

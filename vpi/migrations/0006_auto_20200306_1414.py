@@ -7,13 +7,13 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pi_generator', '0005_auto_20200306_1407'),
+        ('vpi', '0005_auto_20200306_1407'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='target',
             name='performance_indicator',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pi_generator.PerformanceIndicator'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vpi.PerformanceIndicator'),
         ),
     ]

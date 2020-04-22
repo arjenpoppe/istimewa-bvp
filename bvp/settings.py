@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'forms.apps.FormsConfig',
     'data.apps.DataConfig',
     'dashboard.apps.DashboardConfig',
-    'pi_generator.apps.PiGeneratorConfig',
+    'vpi.apps.VpiConfig',
     'polls.apps.PollsConfig',
     'import_export',
     'django.contrib.admin',

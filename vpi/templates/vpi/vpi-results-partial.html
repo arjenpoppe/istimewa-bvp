@@ -1,0 +1,10 @@
+{# vpi-results-partial.html #}
+{% if vpis %}
+  <ul>
+  {% for vpi in vpis %}
+    <li>{{ vpi.name }}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>Geen VPI's gevonden.</p>
+{% endif %}
