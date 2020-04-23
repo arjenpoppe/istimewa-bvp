@@ -1,6 +1,7 @@
 const user_input = $("#user-input")
 const search_icon = $('#search-icon')
 const vpis_div = $('#replaceable-content')
+//const datatable_div = $('#dataTable')
 const endpoint = '/vpi/'
 const delay_by_in_ms = 700
 let scheduled_function = false
@@ -16,10 +17,38 @@ let ajax_call = function (endpoint, request_parameters) {
                 vpis_div.fadeTo('fast', 1)
                 // stop animating search icon
                 search_icon.removeClass('blink')
+                // re-attach datatable bindings
+                attach_datatable_bindings()
             })
+            if (request_parameters['q']) {
+                $('#search-results-title').html("Zoekresultaten")
+            } else {
+                $('#search-results-title').html("Alle VPI's")
+                //re-attach datatable bindings
+            }
+
+
         })
 }
 
+let attach_datatable_bindings = function () {
+    table = $('#dataTable').DataTable( {
+        searching: false,
+        language: {
+            lengthMenu: "Resultaten per pagina: _MENU_",
+            paginate: {
+                "previous": "Vorige",
+                "next": "Volgende"
+            },
+            info: "Pagina _PAGE_ van _PAGES_",
+
+        }
+    });
+}
+
+$(document).ready(function() {
+    attach_datatable_bindings()
+})
 
 user_input.on('keyup', function () {
 

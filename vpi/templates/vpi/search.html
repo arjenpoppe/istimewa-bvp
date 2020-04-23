@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{% block page_header %}Zoek VPI's{% endblock page_header %}{% endblock title %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <!-- Custom styles for this page -->
+    <link href="{% static "vpi/main.css" %}" rel="stylesheet" media="screen">
+{% endblock stylesheets %}
 
 {% block content %}
   <div class="container mb-4">
@@ -19,7 +26,7 @@
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Zoekresultaten</h6>
+      <h6 id="search-results-title" class="m-0 font-weight-bold text-primary">Alle VPI's</h6>
     </div>
     <div class="card-body" id="replaceable-content">
       {% include 'vpi/vpi-results-partial.html' %}   
@@ -27,3 +34,12 @@
   </div>
 
 {% endblock content %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static "vpi/js/main.js" %}"></script>
+
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+{% endblock scripts %}

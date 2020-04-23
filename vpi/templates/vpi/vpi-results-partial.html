@@ -11,15 +11,6 @@
           <th>Actie</th>
         </tr>
       </thead>
-      <tfoot>
-        <tr>
-          <th>ID</th>
-          <th>Naam</th>
-          <th>Omschrijving</th>
-          <th>Meet eenheid</th>
-          <th>Actie</th>
-        </tr>
-      </tfoot>
       <tbody>
         {% for vpi in vpis %}
           <tr>
@@ -34,5 +25,5 @@
     </table>   
   </div>
 {% else %}
-  <p>Geen VPI's gevonden.</p>
+  <p class="mb-0">Geen VPI's gevonden.</p>
 {% endif %}
