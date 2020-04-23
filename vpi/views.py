@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
@@ -6,6 +8,7 @@ from django.db.models import F
 from django.views import generic
 from django.utils import timezone
 
+from bvp import settings
 from data.models import VPI
 
 
@@ -13,6 +16,8 @@ def index(request):
     return render(request, 'vpi/index.html')
 
 
+@login_required
+@permission_required('perms.view_dashboard')
 def search(request):
     ctx = {}
     url_parameter = request.GET.get("q")
@@ -34,11 +39,8 @@ def search(request):
     return render(request, "vpi/search.html", context=ctx)
 
 
-def search_vpi(request, search_string):
-    pass
-
-
-class DetailView(generic.DetailView):
+class DetailView(PermissionRequiredMixin, generic.DetailView):
+    permission_required = 'perms.view_dashboard'
     model = VPI
     template_name = 'vpi/detail.html'
 

@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render
 from django.http import HttpResponse
 from tablib import Dataset
@@ -6,10 +7,14 @@ import time
 from .resources import UltimoResource
 
 
+@login_required
+@permission_required('perms.input_datafile')
 def index(request):
     return render(request, 'data/index.html')
 
 
+@login_required
+@permission_required('perms.input_datafile')
 def upload(request):
     if request.method == 'POST':
         if not request.FILES['myfile'] is None:

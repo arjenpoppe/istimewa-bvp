@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['SERVER-IP', 'localhost', '127.0.0.1', '192.168.2.11']
 # Application definition
 
 INSTALLED_APPS = [
+    'perms.apps.PermsConfig',
     'reporting.apps.ReportingConfig',
     'forms.apps.FormsConfig',
     'data.apps.DataConfig',
@@ -57,6 +58,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'bvp.urls'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 TEMPLATES = [
     {
