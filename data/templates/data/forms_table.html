@@ -10,18 +10,20 @@
                         <th>ID</th>
                         <th>Naam</th>
                         <th>Omschrijving</th>
-                        <th>Invullen door</th>
+                        <th>Laatst ingevuld</th>
                         <th>Actie</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>CO2 uitstoot</td>
-                        <td>blablabla</td>
-                        <td>Iemand</td>
-                        <td><a class="btn btn-primary btn-sm" href="">Invullen</a></td>
-                    </tr>
+                    {% for form in forms %}
+                        <tr>
+                            <td>{{ form.id }}</td>
+                            <td>{{ form.name }}</td>
+                            <td>{{ form.description }}</td>
+                            <td>{{ form.last_filled }}</td>
+                            <td><a class="btn btn-primary btn-sm" href="">Invullen</a></td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

@@ -6,7 +6,7 @@
 {% block content %}
 {#    <a href="{% url 'data:prestatiemeting' %}">Prestatiemeting uitvoeren</a>#}
 {#    <a href="{% url 'data:configure_prestatiemeting' %}">Prestatiemeting configureren</a>#}
-    {% include 'data/forms_table.html' %}
+    {% include 'data/forms_table.html' with forms=forms %}
 
     <hr>
 
@@ -17,18 +17,17 @@
             <h6 id="search-results-title" class="m-0 font-weight-bold text-primary">Prestatiemeting</h6>
         </div>
         <div class="card-body">
-            <form class="form-inline">
-                <select class="form-control m-2 col-4" id="project-select">
+            <form class="form-inline" method="post" action="{% url 'data:forms' %}">
+                {% csrf_token %}
+                <select name="project_select" class="form-control m-2 col-4" id="project-select">
                     <option>Selecteer project...</option>
-                    <option>P000045: Projectnaam</option>
-                    <option>P000036: Projectnaam</option>
-                    <option>P000365: Projectnaam</option>
-                    <option>P000735: Projectnaam</option>
-                    <option>P000756: Projectnaam</option>
+                    {% for project in projects %}
+                        <option value="{{ project.number }}">{{ project.number }}: {{ project.name }}</option>
+                    {% endfor %}
                 </select>
-                <button class="btn btn-primary m-2">Prestatiemeting configureren</button>
-                <button class="btn btn-primary m-2">Prestatiemeting invullen</button>
-                <button class="btn btn-primary m-2">Prestatiemeting uploaden</button>
+                <button class="btn btn-primary m-2" name="prestatiemeting_conf">Prestatiemeting configureren</button>
+                <button class="btn btn-primary m-2" name="prestatiemeting_fill">Prestatiemeting invullen</button>
+                <button class="btn btn-primary m-2" name="prestatiemeting_upload">Prestatiemeting uploaden</button>
             </form>
         </div>
     </div>

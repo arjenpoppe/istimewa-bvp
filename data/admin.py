@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import PrestatiemetingQuestion, PrestatiemetingAnswer, Prestatiemeting
+from .models import PrestatiemetingQuestion, PrestatiemetingAnswer, Prestatiemeting, Form, FormField, FormFieldMultipleChoiceAnswer
+
+
+admin.site.register(Prestatiemeting)
 
 
 class PrestatiemetingAnswerInline(admin.TabularInline):
@@ -12,6 +15,16 @@ class PrestatiemetingQuestionAdmin(admin.ModelAdmin):
     list_display = ('question_number', 'theme', 'question')
 
 
-admin.site.register(Prestatiemeting)
 admin.site.register(PrestatiemetingQuestion, PrestatiemetingQuestionAdmin)
+
+
+class FormFieldInline(admin.TabularInline):
+    model = FormField
+
+
+class FormAdmin(admin.ModelAdmin):
+    inlines = [FormFieldInline]
+
+
+admin.site.register(Form, FormAdmin)
 

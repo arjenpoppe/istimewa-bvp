@@ -4,7 +4,10 @@ from django.http import HttpResponse
 from tablib import Dataset
 import time
 
+from .models import Form
 from .resources import UltimoResource
+
+from vpi.models import Project
 
 
 @login_required
@@ -44,7 +47,20 @@ def upload(request):
 @login_required
 @permission_required('perms.view_forms')
 def forms(request):
-    return render(request, 'data/forms.html')
+    if request.POST:
+        project_id = request.POST.get('project_select')
+        if 'prestatiemeting_conf' in request.POST:
+            print('Go to prestatiemeting config')
+        if 'prestatiemeting_fill' in request.POST:
+            print('Go to prestatiemeting fill')
+        if 'prestatiemeting_upload' in request.POST:
+            print('Go to prestatiemeting upload')
+
+    context = {
+        'projects': Project.objects.all(),
+        'forms': request.user.form_set.all(),
+    }
+    return render(request, 'data/forms.html', context=context)
 
 
 @login_required
@@ -61,5 +77,11 @@ def prestatiemeting(request):
 
 @login_required
 @permission_required('perms.view_forms')
-def configure_prestatiemeting(request):
+def configure_prestatiemeting(request, project_id):
+    return render(request, 'data/prestatiemeting_configure.html')
+
+
+@login_required
+@permission_required('perms.view_forms')
+def upload_prestatiemeting(request, project_id):
     return render(request, 'data/prestatiemeting_configure.html')
