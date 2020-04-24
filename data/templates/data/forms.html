@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% block page_header %}Formulieren{% endblock page_header %}{% endblock title %}
+
+{% block content %}
+{#    <a href="{% url 'data:prestatiemeting' %}">Prestatiemeting uitvoeren</a>#}
+{#    <a href="{% url 'data:configure_prestatiemeting' %}">Prestatiemeting configureren</a>#}
+    {% include 'data/forms_table.html' %}
+
+    <hr>
+
+    <span><h5>Prestatiemeting</h5></span>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 id="search-results-title" class="m-0 font-weight-bold text-primary">Prestatiemeting</h6>
+        </div>
+        <div class="card-body">
+            <form class="form-inline">
+                <select class="form-control m-2 col-4" id="project-select">
+                    <option>Selecteer project...</option>
+                    <option>P000045: Projectnaam</option>
+                    <option>P000036: Projectnaam</option>
+                    <option>P000365: Projectnaam</option>
+                    <option>P000735: Projectnaam</option>
+                    <option>P000756: Projectnaam</option>
+                </select>
+                <button class="btn btn-primary m-2">Prestatiemeting configureren</button>
+                <button class="btn btn-primary m-2">Prestatiemeting invullen</button>
+                <button class="btn btn-primary m-2">Prestatiemeting uploaden</button>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock content%}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'data/js/data.js' %}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+{% endblock %}

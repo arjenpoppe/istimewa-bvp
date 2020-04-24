@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block title %}{% block page_header %}Prestatiemeting uitvoeren{% endblock page_header %}{% endblock title %}
+
+{% block content %}
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% endblock content%}

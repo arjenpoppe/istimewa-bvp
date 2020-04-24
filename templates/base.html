@@ -51,7 +51,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'dashboard:index' %}">
+        <a class="nav-link" href="{% url 'dashboard:dashboard' %}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
@@ -68,7 +68,7 @@
 
       <!-- Nav Item - reporting -->
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'reporting:index' %}">
+        <a class="nav-link" href="{% url 'dashboard:reports' %}">
           <i class="fas fa-fw fa-cogs"></i>
           <span>Rapportages</span></a>
       </li>
@@ -85,9 +85,9 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">invoer methoden:</h6>
-            <a class="collapse-item" href="{% url 'forms:index' %}">Formulieren</a>
+            <a class="collapse-item" href="{% url 'data:forms' %}">Formulieren</a>
             <a class="collapse-item" href="{% url 'data:upload' %}">Databestanden</a>
-            <a class="collapse-item" href="{% url 'forms:index' %}">Prestatiemeting</a>
+            <a class="collapse-item" href="{% url 'data:forms' %}">Prestatiemeting</a>
           </div>
         </div>
       </li>
@@ -268,7 +268,7 @@
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">{% block page_header %}{% endblock page_header %}</h1>
-            <a href="{% url 'reporting:index' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+            <a href="{% url 'dashboard:reports' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
           </div>
 
           {% block content %}

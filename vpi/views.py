@@ -1,16 +1,11 @@
 from django.contrib.auth.decorators import permission_required, login_required
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.shortcuts import render
+from django.http import JsonResponse
 from django.template.loader import render_to_string
-from django.urls import reverse
-from django.db.models import F
 from django.views import generic
-from django.utils import timezone
 
-from bvp import settings
-from data.models import VPI
-
+from .models import VPI
 
 def index(request):
     return render(request, 'vpi/index.html')

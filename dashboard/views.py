@@ -5,6 +5,18 @@ from django.http import HttpResponse
 
 @login_required
 @permission_required('perms.view_dashboard', login_url='login')
-def index(request):
+def dashboard(request):
     print(request.user)
-    return render(request, 'dashboard/index.html')
+    return render(request, 'dashboard/dashboard.html')
+
+
+@login_required
+@permission_required('perms.generate_reports')
+def reports(request):
+    return render(request, 'dashboard/reporting.html')
+
+
+@login_required
+@permission_required('perms.generate_reports')
+def reports_detail(request, report_id):
+    return render(request, 'dashboard/reporting.html')

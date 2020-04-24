@@ -1,21 +1,17 @@
 from django.contrib import admin
-from .models import Project, ProjectGoal, VPI, VPITarget, Value
+from .models import PrestatiemetingQuestion, PrestatiemetingAnswer, Prestatiemeting
 
 
-class ValueInline(admin.TabularInline):
-    model = Value
+class PrestatiemetingAnswerInline(admin.TabularInline):
+    model = PrestatiemetingAnswer
     extra = 0
-    readonly_fields = ["created"]
 
 
-class VPIAdmin(admin.ModelAdmin):
-    inlines = [ValueInline]
+class PrestatiemetingQuestionAdmin(admin.ModelAdmin):
+    inlines = [PrestatiemetingAnswerInline]
+    list_display = ('question_number', 'theme', 'question')
 
 
-admin.site.register(Project)
-admin.site.register(ProjectGoal)
-admin.site.register(VPI, VPIAdmin)
-admin.site.register(VPITarget)
-admin.site.register(Value)
-
+admin.site.register(Prestatiemeting)
+admin.site.register(PrestatiemetingQuestion, PrestatiemetingQuestionAdmin)
 

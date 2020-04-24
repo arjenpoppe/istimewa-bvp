@@ -1,57 +1,51 @@
 from django.db import models
+from vpi.models import Project
 
 
-class Project(models.Model):
-    number = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.number}: {self.name}'
-
-
-class ProjectGoal(models.Model):
-    number = models.IntegerField()
-    project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    goal = models.TextField()
+class PrestatiemetingQuestion(models.Model):
+    question_number = models.IntegerField(primary_key=True)
+    question = models.TextField()
+    theme = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'{self.project.number}:{self.project.name} - Projectdoel {self.number}'
+        return f'Question number: {self.question_number}'
 
 
-class VPI(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    measuring_unit = models.CharField(max_length=20)
-    formula = models.CharField(max_length=200, blank=True, null=True)
-    theme = models.CharField(max_length=100, blank=True, null=True)
-    type = models.CharField(max_length=20, blank=True, null=True)
+class Prestatiemeting(models.Model):
+    project_number = models.ForeignKey(Project, on_delete=models.CASCADE)
+    questions = models.ManyToManyField(PrestatiemetingQuestion)
 
     def __str__(self):
-        return f'{self.name}'
+        return f'Project: {self.project_number.number}'
 
 
-class VPITarget(models.Model):
-    project_goal = models.OneToOneField(ProjectGoal, on_delete=models.CASCADE, null=True)
-    vpi = models.OneToOneField(VPI, on_delete=models.CASCADE)
-    green = models.CharField(max_length=10)
-    yellow = models.CharField(max_length=20)
-    red = models.CharField(max_length=20)
+class PrestatiemetingGradation(models.Model):
+    letter = models.CharField(max_length=1, primary_key=True)
+    gradation = models.CharField(max_length=10)
 
     def __str__(self):
-        if self.project_goal:
-            return f'{str(self.project_goal)}'
-        else:
-            return f'VPI: {str(self.vpi)}'
+        return f'{self.letter}: {self.gradation}'
 
 
-class Value(models.Model):
-    value = models.FloatField()
-    vpi = models.ForeignKey(VPI, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+class PrestatiemetingAnswer(models.Model):
+    answer = models.TextField()
+    gradation = models.ForeignKey(PrestatiemetingGradation, on_delete=models.CASCADE)
+    question = models.ForeignKey(PrestatiemetingQuestion, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.value)
+        return f'question: {self.question.question_number} answer: {self.gradation.letter}'
+
+
+class PrestatiemetingBeoordeling(models.Model):
+    explanation = models.TextField()
+    answer = models.ForeignKey(PrestatiemetingAnswer, on_delete=models.CASCADE)
+    prestatiemeting = models.ForeignKey(Prestatiemeting, on_delete=models.CASCADE)
+
+
+class PrestatiemetingOpenQuestion(models.Model):
+    question = models.TextField()
+    answer = models.TextField()
+    prestatiemeting = models.ForeignKey(Prestatiemeting, on_delete=models.CASCADE)
 
 
 class Ultimo(models.Model):

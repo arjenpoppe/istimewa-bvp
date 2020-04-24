@@ -39,3 +39,27 @@ def upload(request):
                 print('Import took:', time.time() - start_import, 'seconds.')
 
     return render(request, 'data/upload.html')
+
+
+@login_required
+@permission_required('perms.view_forms')
+def forms(request):
+    return render(request, 'data/forms.html')
+
+
+@login_required
+@permission_required('perms.view_forms')
+def forms_detail(request, form_id):
+    return render(request, 'data/forms.html')
+
+
+@login_required
+@permission_required('perms.view_forms')
+def prestatiemeting(request):
+    return render(request, 'data/prestatiemeting.html')
+
+
+@login_required
+@permission_required('perms.view_forms')
+def configure_prestatiemeting(request):
+    return render(request, 'data/prestatiemeting_configure.html')

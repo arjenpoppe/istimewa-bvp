@@ -21,8 +21,6 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('reporting/', include('reporting.urls')),
-    path('forms/', include('forms.urls')),
     path('vpi/', include('vpi.urls')),
     path('polls/', include('polls.urls')),
     path('data/', include('data.urls')),
