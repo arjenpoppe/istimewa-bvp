@@ -11,8 +11,7 @@ ssh administrator@$IP -p $PORT <<EOF
   git pull origin release
   python -m pip install -r requirements.txt
   python manage.py migrate
-  python manage.py collectstatic
-  powershell Restart-Service Apache2.4
+  python manage.py collectstatic --noinput
 EOF
 
 echo "deployment successful"
