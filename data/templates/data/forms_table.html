@@ -21,7 +21,7 @@
                             <td>{{ form.name }}</td>
                             <td>{{ form.description }}</td>
                             <td>{{ form.last_filled }}</td>
-                            <td><a class="btn btn-primary btn-sm" href="">Invullen</a></td>
+                            <td><a class="btn btn-primary btn-sm" href="{% url 'data:forms_detail' form.id %}">Invullen</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

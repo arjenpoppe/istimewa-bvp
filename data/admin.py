@@ -28,3 +28,14 @@ class FormAdmin(admin.ModelAdmin):
 
 admin.site.register(Form, FormAdmin)
 
+
+class FormFieldMultipleChoiceAnswerInline(admin.TabularInline):
+    model = FormFieldMultipleChoiceAnswer
+
+
+class FormFieldAdmin(admin.ModelAdmin):
+    inlines = [FormFieldMultipleChoiceAnswerInline]
+
+
+admin.site.register(FormField, FormFieldAdmin)
+

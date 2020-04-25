@@ -66,7 +66,8 @@ def forms(request):
 @login_required
 @permission_required('perms.view_forms')
 def forms_detail(request, form_id):
-    return render(request, 'data/forms.html')
+    form = Form.objects.get(pk=form_id)
+    return render(request, 'data/forms_detail.html', {'form': form})
 
 
 @login_required

@@ -12,6 +12,9 @@ class Form(models.Model):
     def __str__(self):
         return self.name
 
+    def get_form_fields(self):
+        return self.objects.formfield_set.all()
+
 
 class FormField(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
