@@ -15,3 +15,5 @@ ssh administrator@$IP -p $PORT <<EOF
 EOF
 
 echo "deployment successful"
+
+# deployed successfully
