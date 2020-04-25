@@ -7,7 +7,7 @@ ssh-add .travis/id_rsa # Add the private key to SSH
 
 # Skip this command if you don't need to execute any additional commands after deploying.
 ssh -tt administrator@$IP -p $PORT <<EOF
-  cd $DEPLOY_DIR
+  cd documents/istimewa-bvp
   git pull origin release
   python -m pip install -r requirements.txt
   python manage.py migrate
