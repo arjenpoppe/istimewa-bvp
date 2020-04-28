@@ -1,7 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}{% block page_header %}Prestatiemeting uitvoeren{% endblock page_header %}{% endblock title %}
+{% block title %}{% block page_header %}Prestatiemeting voor project {{ prestatiemeting.project }}{% endblock page_header %}{% endblock title %}
+
+{% block header_button %}
+    <a href="#" data-toggle="modal" data-target="#exportModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Download Excel formulier</a>
+{% endblock %}
 
 {% block content %}
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Thema
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'data:prestatiemeting' prestatiemeting.id %}">
+                {% csrf_token %}
+                {% for question in questions %}
+                    <fieldset class="form-group">
+                        <label for="answer"><b>{{ question.question }}</b></label>
+                        {% for answer in question.prestatiemetinganswer_set.all %}
+                            <div class="form-check" id="answer">
+                                <input class="form-check-input" type="radio" name="question_{{ question.number }}" id="option{{ answer.id }}" value="{{ answer.id }}" required>
+                                <label class="form-check-label" for="option{{ answer.id }}">
+                                    {{ answer.gradation.letter }}. {{ answer.gradation.gradation }}: {{ answer.answer }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </fieldset>
+                    <hr>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Opslaan</button>
+            </form>
+        </div>
+    </div>
 {% endblock content%}
+
+{% block modals %}
+  <!-- Discard form Modal-->
+  <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Excel formulier downloaden?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Hier kunt u het bijbehorende formulier OG -> ON downloaden</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="{% url 'data:export_excel' %}">Downloaden</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock modals %}

@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import permission_required, login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from tablib import Dataset
 import time
 
-from .models import Form
+from .models import Form, PrestatiemetingQuestion, PrestatiemetingTheme, Prestatiemeting, PrestatiemetingConfig, \
+    PrestatiemetingResult, PrestatiemetingAnswer
 from .resources import UltimoResource
+from data.helpers.excel import export_prestatiemeting
 
 from vpi.models import Project
 
@@ -48,11 +50,13 @@ def upload(request):
 @permission_required('perms.view_forms')
 def forms(request):
     if request.POST:
-        project_id = request.POST.get('project_select')
+        project = Project.objects.get(number=request.POST.get('project_select'))
+        pm = Prestatiemeting.objects.get_or_create(project=project)
+
         if 'prestatiemeting_conf' in request.POST:
-            print('Go to prestatiemeting config')
+            return redirect('data:prestatiemeting_config', prestatiemeting_id=pm[0].id)
         if 'prestatiemeting_fill' in request.POST:
-            print('Go to prestatiemeting fill')
+            return redirect('data:prestatiemeting', prestatiemeting_id=pm[0].id)
         if 'prestatiemeting_upload' in request.POST:
             print('Go to prestatiemeting upload')
 
@@ -65,6 +69,28 @@ def forms(request):
 
 @login_required
 @permission_required('perms.view_forms')
+def prestatiemeting_config(request, prestatiemeting_id, about='OG'):
+    if request.POST:
+        PrestatiemetingConfig.objects.filter(prestatiemeting=prestatiemeting_id).delete()
+
+        for option in request.POST.getlist('question_checkbox'):
+            print(request.POST.getlist('question_checkbox'))
+            pmc = PrestatiemetingConfig(prestatiemeting=Prestatiemeting.objects.get(id=prestatiemeting_id),
+                                        question=PrestatiemetingQuestion.objects.get(number=option))
+            pmc.save()
+
+        return redirect('data:forms')
+
+    pm = Prestatiemeting.objects.get(id=prestatiemeting_id)
+    themes = PrestatiemetingTheme.objects.all()
+
+    return render(request, 'data/prestatiemeting_config.html', {'prestatiemeting': pm,
+                                                                'themes': themes,
+                                                                'about': about})
+
+
+@login_required
+@permission_required('perms.view_forms')
 def forms_detail(request, form_id):
     form = Form.objects.get(pk=form_id)
     return render(request, 'data/forms_detail.html', {'form': form})
@@ -72,17 +98,36 @@ def forms_detail(request, form_id):
 
 @login_required
 @permission_required('perms.view_forms')
-def prestatiemeting(request):
-    return render(request, 'data/prestatiemeting.html')
+def prestatiemeting(request, prestatiemeting_id):
+    pm = Prestatiemeting.objects.get(id=prestatiemeting_id)
+    configs = PrestatiemetingConfig.objects.filter(prestatiemeting=pm)
+    question_id_list = []
 
+    for config in configs:
+        question_id_list.append(config.question.number)
 
-@login_required
-@permission_required('perms.view_forms')
-def configure_prestatiemeting(request, project_id):
-    return render(request, 'data/prestatiemeting_configure.html')
+    questions = PrestatiemetingQuestion.objects.filter(number__in=question_id_list,
+                                                       about='OG')
+    pm = Prestatiemeting.objects.get(id=prestatiemeting_id)
+
+    if request.POST:
+        for question in questions:
+            answer_id = request.POST.get(f'question_{question.number}')
+            pmr = PrestatiemetingResult(prestatiemeting=pm, question=question,
+                                        answer=PrestatiemetingAnswer.objects.get(id=answer_id))
+            pmr.save()
+
+            return redirect('data:forms')
+
+    return render(request, 'data/prestatiemeting.html', {'prestatiemeting': pm, 'questions': questions})
 
 
 @login_required
 @permission_required('perms.view_forms')
 def upload_prestatiemeting(request, project_id):
-    return render(request, 'data/prestatiemeting_configure.html')
+    return render(request, 'data/prestatiemeting_config.html')
+
+
+def export_excel(request):
+    export_prestatiemeting()
+    return redirect('data:forms')

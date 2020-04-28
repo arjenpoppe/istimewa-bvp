@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{% block page_header %}Project: {{ prestatiemeting.project.number }} - Prestatiemeting configureren{% endblock page_header %}{% endblock title %}
+
+{% block content %}
+    <form method="post" action="{% url 'data:prestatiemeting_config' prestatiemeting.id %}">
+
+{#        <h4>Vragen over de opdrachtnemer</h4>#}
+{#        {% for theme in themes %}#}
+{#            {{ theme.prestatiemetingquestion_set.filter(about='ON') }}#}
+{##}
+{#            <div class="card shadow mb-4">#}
+{##}
+{#            </div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#            {% for question in question_set_on %}#}
+{#                {% if question.theme == theme %}#}
+{#                    <div class="card shadow mb-4">#}
+{#                        <a href="#collapseCard{{ forloop.counter }}" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard{{ forloop.counter }}">#}
+{#                            <h6 class="m-0 font-weight-bold text-primary">{{ theme.theme }}</h6>#}
+{#                        </a>#}
+{#                        <div class="collapse show" id="collapseCard{{ forloop.counter }}" style="">#}
+{#                            <div class="card-body">#}
+{#                                {% for question in theme.prestatiemetingquestion_set.all %}#}
+{#                                    {% if question.about == 'ON' %}#}
+{#                                        <div class="form-group">#}
+{#                                            <div class="form-check" id="answer">#}
+{#                                                <input class="form-check-input" type="checkbox" name="question_checkbox" id="option{{ forloop.counter }}" value="{{ question.number }}">#}
+{#                                                <label class="form-check-label" for="option{{ forloop.counter }}">#}
+{#                                                    {{ question.question }}#}
+{#                                                </label>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <hr>#}
+{#                                    {% endif %}#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endif %}#}
+{#            {% endfor %}#}
+{#        {% endfor %}#}
+
+        <h4>Vragen over de opdrachtnemer</h4>
+        {% csrf_token %}
+        {% for theme in themes %}
+            {% if theme.questions_on %}
+                <div class="card shadow mb-4">
+                    <a href="#collapseCard{{ forloop.counter }}" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard{{ forloop.counter }}">
+                        <h6 class="m-0 font-weight-bold text-primary">{{ theme.theme }}</h6>
+                    </a>
+                    <div class="collapse show" id="collapseCard{{ forloop.counter }}" style="">
+                        <div class="card-body">
+                            {% for question in theme.questions_on %}
+                                <div class="form-group">
+                                    <div class="form-check" id="answer">
+                                        <input class="form-check-input" type="checkbox" name="question_checkbox" id="option{{ forloop.counter }}" value="{{ question.number }}">
+                                        <label class="form-check-label" for="option{{ forloop.counter }}">
+                                            {{ question.number }}. {{ question.question }}
+                                        </label>
+                                    </div>
+                                </div>
+                                <hr>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <h4>Vragen over de opdrachtgever</h4>
+        {% csrf_token %}
+        {% for theme in themes %}
+            {% if theme.questions_og %}
+                <div class="card shadow mb-4">
+                    <a href="#collapseCard{{ forloop.counter }}" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCard{{ forloop.counter }}">
+                        <h6 class="m-0 font-weight-bold text-primary">{{ theme.theme }}</h6>
+                    </a>
+                    <div class="collapse show" id="collapseCard{{ forloop.counter }}" style="">
+                        <div class="card-body">
+                            {% for question in theme.questions_og %}
+                                <div class="form-group">
+                                    <div class="form-check" id="answer">
+                                        <input class="form-check-input" type="checkbox" name="question_checkbox" id="option{{ forloop.counter }}" value="{{ question.number }}">
+                                        <label class="form-check-label" for="option{{ forloop.counter }}">
+                                            {{ question.number }}. {{ question.question }}
+                                        </label>
+                                    </div>
+                                </div>
+                                <hr>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+
+
+        <div class="card shadow mb-4">
+            <button class="btn btn-primary" type="submit">Opslaan</button>
+        </div>
+    </form>
+{% endblock content%}
