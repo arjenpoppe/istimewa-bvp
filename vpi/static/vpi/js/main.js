@@ -44,6 +44,9 @@ let attach_datatable_bindings = function () {
 
         }
     });
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var data = table.row( this ).data();
+    } );
 }
 
 $(document).ready(function() {

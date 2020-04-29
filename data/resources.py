@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import Ultimo
+from .models.sources import Ultimo
 from import_export.fields import Field
 
 

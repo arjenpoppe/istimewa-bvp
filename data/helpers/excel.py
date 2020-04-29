@@ -2,9 +2,7 @@ import io
 
 import xlsxwriter
 
-from data.models import PrestatiemetingConfig, Prestatiemeting, PrestatiemetingQuestion
-
-# Prestatiemeting Themes, questions and answers
+from data.models.prestatiemeting import PrestatiemetingConfig, Prestatiemeting, PrestatiemetingQuestion
 
 
 def export_prestatiemeting(prestatiemeting_id):

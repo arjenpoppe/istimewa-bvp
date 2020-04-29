@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import PrestatiemetingQuestion, PrestatiemetingAnswer, Prestatiemeting, Form, \
-    FormField, FormFieldMultipleChoiceAnswer, PrestatiemetingGradation, PrestatiemetingTheme
+from .models.prestatiemeting import PrestatiemetingQuestion, PrestatiemetingAnswer, Prestatiemeting, \
+    PrestatiemetingGradation, PrestatiemetingTheme
+
+from .models.forms import Form, FormField, FormFieldMultipleChoiceAnswer
 
 
 admin.site.register(Prestatiemeting)

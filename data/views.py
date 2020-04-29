@@ -6,8 +6,11 @@ from django.http import HttpResponse
 from tablib import Dataset
 import time
 
-from .models import Form, PrestatiemetingQuestion, PrestatiemetingTheme, Prestatiemeting, PrestatiemetingConfig, \
-    PrestatiemetingResult, PrestatiemetingAnswer
+from .models.forms import Form
+
+from .models.prestatiemeting import PrestatiemetingQuestion, PrestatiemetingTheme, Prestatiemeting, \
+    PrestatiemetingConfig, PrestatiemetingResult, PrestatiemetingAnswer
+
 from .resources import UltimoResource
 from data.helpers.excel import export_prestatiemeting
 

@@ -2,6 +2,45 @@
 
 {% block title %}{% block page_header %}{{ vpi.name }}{% endblock page_header %}{% endblock title %}
 
+{% block header_button %}
+    <a href="{% url 'vpi:index' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Terug naar overzicht</a>
+{% endblock %}
+
 {% block content %}
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+    <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#1" aria-controls="1" role="tab" data-toggle="tab">Home</a></li>
+        <li role="presentation"><a href="#2" aria-controls="2" role="tab" data-toggle="tab">Profile</a></li>
+        <li role="presentation"><a href="#3" aria-controls="3" role="tab" data-toggle="tab">Messages</a></li>
+        <li role="presentation"><a href="#4" aria-controls="4" role="tab" data-toggle="tab">Settings</a></li>
+      </ul>
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Home</a></li>
+        <li role="presentation"><a href="#6" aria-controls="6" role="tab" data-toggle="tab">Profile</a></li>
+        <li role="presentation"><a href="#7" aria-controls="7" role="tab" data-toggle="tab">Messages</a></li>
+        <li role="presentation"><a href="#8" aria-controls="8" role="tab" data-toggle="tab">Settings</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="1">1</div>
+        <div role="tabpanel" class="tab-pane" id="2">2</div>
+        <div role="tabpanel" class="tab-pane" id="3">3</div>
+        <div role="tabpanel" class="tab-pane" id="4">4</div>
+        <div role="tabpanel" class="tab-pane" id="5">5</div>
+        <div role="tabpanel" class="tab-pane" id="6">6</div>
+        <div role="tabpanel" class="tab-pane" id="7">7</div>
+        <div role="tabpanel" class="tab-pane" id="8">8</div>
+      </div>
+
+
+    <div class="card shadow mb-4">
+        <div class="card-body col-6">
+            <p>{{ vpi.description }}</p>
+        </div>
+    </div>
 {% endblock content%}
