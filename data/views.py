@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -100,26 +102,33 @@ def forms_detail(request, form_id):
 @permission_required('perms.view_forms')
 def prestatiemeting(request, prestatiemeting_id):
     pm = Prestatiemeting.objects.get(id=prestatiemeting_id)
-    configs = PrestatiemetingConfig.objects.filter(prestatiemeting=pm)
-    question_id_list = []
 
-    for config in configs:
-        question_id_list.append(config.question.number)
+    question_id_list = PrestatiemetingConfig.objects.filter(prestatiemeting=pm)\
+        .values_list('question__number', flat=True).filter(question__about='OG')
 
     questions = PrestatiemetingQuestion.objects.filter(number__in=question_id_list,
                                                        about='OG')
-    pm = Prestatiemeting.objects.get(id=prestatiemeting_id)
+
+    themes = []
+
+    for question in questions:
+        if question.theme not in themes:
+            themes.append(question.theme)
 
     if request.POST:
+        print(request.POST)
         for question in questions:
+            print(question)
             answer_id = request.POST.get(f'question_{question.number}')
             pmr = PrestatiemetingResult(prestatiemeting=pm, question=question,
                                         answer=PrestatiemetingAnswer.objects.get(id=answer_id))
             pmr.save()
 
-            return redirect('data:forms')
+        pm.dateTime = datetime.now()
+        pm.save()
+        return redirect('data:forms')
 
-    return render(request, 'data/prestatiemeting.html', {'prestatiemeting': pm, 'questions': questions})
+    return render(request, 'data/prestatiemeting.html', {'prestatiemeting': pm, 'questions': questions, 'themes': themes})
 
 
 @login_required
@@ -128,6 +137,15 @@ def upload_prestatiemeting(request, project_id):
     return render(request, 'data/prestatiemeting_config.html')
 
 
-def export_excel(request):
-    export_prestatiemeting()
-    return redirect('data:forms')
+def export_excel(request, prestatiemeting_id):
+    output = export_prestatiemeting(prestatiemeting_id)
+    output.seek(0)
+
+    filename = 'prestatiemeting.xlsx'
+    response = HttpResponse(
+        output,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    return response

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 from vpi.models import Project
@@ -87,7 +89,7 @@ class PrestatiemetingAnswer(models.Model):
     question = models.ForeignKey(PrestatiemetingQuestion, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'question: {self.question.number} answer: {self.gradation.letter}'
+        return f'{self.gradation.letter}. {self.gradation.gradation} - {self.answer}'
 
 
 class PrestatiemetingBeoordeling(models.Model):

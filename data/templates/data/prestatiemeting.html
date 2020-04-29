@@ -9,31 +9,67 @@
 {% block content %}
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-    <div class="card mb-4">
-        <div class="card-header">
-            Thema
+    <form method="post" action="{% url 'data:prestatiemeting' prestatiemeting.id %}">
+        {% csrf_token %}
+        {% for theme in themes %}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 id="search-results-title" class="m-0 font-weight-bold text-primary">{{ theme }}</h6>
+                </div>
+                <div class="card-body">
+                    {% for question in questions %}
+                        {% if question.theme == theme %}
+                            <fieldset class="form-group">
+                                <label for="answer"><b>{{ question.question }}</b></label>
+                                {% for answer in question.prestatiemetinganswer_set.all %}
+                                    <div class="form-check" id="answer">
+                                        <input class="form-check-input" type="radio" name="question_{{ question.number }}" id="option{{ answer.id }}" value="{{ answer.id }}" required>
+                                        <label class="form-check-label" for="option{{ answer.id }}">
+                                            {{ answer.gradation.letter }}. {{ answer.gradation.gradation }}: {{ answer.answer }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </fieldset>
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        <div class="card shadow mb-4">
+            <button type="submit" class="btn btn-primary">Opslaan</button>
         </div>
-        <div class="card-body">
-            <form method="post" action="{% url 'data:prestatiemeting' prestatiemeting.id %}">
-                {% csrf_token %}
-                {% for question in questions %}
-                    <fieldset class="form-group">
-                        <label for="answer"><b>{{ question.question }}</b></label>
-                        {% for answer in question.prestatiemetinganswer_set.all %}
-                            <div class="form-check" id="answer">
-                                <input class="form-check-input" type="radio" name="question_{{ question.number }}" id="option{{ answer.id }}" value="{{ answer.id }}" required>
-                                <label class="form-check-label" for="option{{ answer.id }}">
-                                    {{ answer.gradation.letter }}. {{ answer.gradation.gradation }}: {{ answer.answer }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </fieldset>
-                    <hr>
-                {% endfor %}
-                <button type="submit" class="btn btn-primary">Opslaan</button>
-            </form>
-        </div>
-    </div>
+        </form>
+
+
+
+
+{##}
+{#    <div class="card mb-4">#}
+{#        <div class="card-header">#}
+{#            Thema#}
+{#        </div>#}
+{#        <div class="card-body">#}
+{#            <form method="post" action="{% url 'data:prestatiemeting' prestatiemeting.id %}">#}
+{#                {% csrf_token %}#}
+{#                {% for question in questions %}#}
+{#                    <fieldset class="form-group">#}
+{#                        <label for="answer"><b>{{ question.question }}</b></label>#}
+{#                        {% for answer in question.prestatiemetinganswer_set.all %}#}
+{#                            <div class="form-check" id="answer">#}
+{#                                <input class="form-check-input" type="radio" name="question_{{ question.number }}" id="option{{ answer.id }}" value="{{ answer.id }}" required>#}
+{#                                <label class="form-check-label" for="option{{ answer.id }}">#}
+{#                                    {{ answer.gradation.letter }}. {{ answer.gradation.gradation }}: {{ answer.answer }}#}
+{#                                </label>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </fieldset>#}
+{#                    <hr>#}
+{#                {% endfor %}#}
+{#                <button type="submit" class="btn btn-primary">Opslaan</button>#}
+{#            </form>#}
+{#        </div>#}
+{#    </div>#}
 {% endblock content%}
 
 {% block modals %}
@@ -49,8 +85,8 @@
         </div>
         <div class="modal-body">Hier kunt u het bijbehorende formulier OG -> ON downloaden</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="{% url 'data:export_excel' %}">Downloaden</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Sluiten</button>
+          <a class="btn btn-primary" href="{% url 'data:export_excel' prestatiemeting.id %}">Downloaden</a>
         </div>
       </div>
     </div>
