@@ -21,6 +21,8 @@ def export_prestatiemeting(prestatiemeting_id):
 
     print(questions)
 
+    meta_data_rows_required = len(questions) + 1
+
     # workbook in memory
     output = io.BytesIO()
 
@@ -28,9 +30,11 @@ def export_prestatiemeting(prestatiemeting_id):
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet()
 
-    # Start of non static content
-    row = 1
+    # counters
+    row = 1 + meta_data_rows_required
     col = 0
+    meta_data_counter = 1
+    question_rows = []
 
     # format options
     theme_format = workbook.add_format()
@@ -62,10 +66,11 @@ def export_prestatiemeting(prestatiemeting_id):
     worksheet.set_column('A:C', 80, workbook.add_format({'text_wrap': True}))
 
     # Write static data to file
-    worksheet.merge_range('A1:C1', 'BEOORDELING VAN OPDRACHTNEMER DOOR OPDRACHTGEVER', title_format)
+    worksheet.merge_range(row - 1, col, row - 1, col + 2, 'BEOORDELING VAN OPDRACHTNEMER DOOR OPDRACHTGEVER', title_format)
 
     worksheet.protect()
 
+    # create visual data
     for theme in themes:
         worksheet.merge_range(row, col, row, col + 2, theme.theme.upper(), theme_format)
         worksheet.write(row + 1, col, 'Vraag', question_header)
@@ -101,7 +106,21 @@ def export_prestatiemeting(prestatiemeting_id):
 
                 # choice field
                 worksheet.write(row, col + 1, 'Maak een keuze', unlocked)
+                question_rows.append(row)
                 row += answer_amount + 1
+
+    # create metadata
+    worksheet.write(0, 0, f'prestatiemeting_id={prestatiemeting_id}')
+    worksheet.write(0, 1, f'question_amount={len(questions)}')
+    worksheet.set_row(0, None, None, {'hidden': True})
+
+    for question in questions:
+        worksheet.write(meta_data_counter, 0, question.number)
+        worksheet.write(meta_data_counter, 1, f'=B{question_rows[meta_data_counter - 1] + 1}')
+        worksheet.set_row(meta_data_counter, None, None, {'hidden': True})
+        meta_data_counter += 1
+
+    print(question_rows)
 
     workbook.close()
 

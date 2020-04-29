@@ -79,3 +79,4 @@ class PrestatiemetingResult(models.Model):
     prestatiemeting = models.ForeignKey(Prestatiemeting, on_delete=models.CASCADE)
     question = models.ForeignKey(PrestatiemetingQuestion, on_delete=models.CASCADE)
     answer = models.ForeignKey(PrestatiemetingAnswer, on_delete=models.CASCADE)
+    explanation = models.TextField(null=True, blank=True)

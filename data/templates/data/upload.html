@@ -1,13 +1,28 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{% block page_header %}Upload Data{% endblock page_header %}{% endblock title %}
 
 {% block content %}
-  <div class="container">
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="file" name="myfile">
-      <button type="submit">Upload</button>
-    </form>
-  </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                    <div class="form-group">
+                        <label for="source">Selecteer databron</label>
+                        <select class="form-control col-3" id="source" name="source" required>
+                            <option value="">Selecteer bron</option>
+                            <option value="prestatiemeting">Prestatiemeting</option>
+                            <option value="ultimo">Ultimo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileUpload">Upload databestand</label>
+                        <input class="form-control-file" type="file" name="datafile" id="fileUpload" required />
+                    </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
+
 {% endblock %}

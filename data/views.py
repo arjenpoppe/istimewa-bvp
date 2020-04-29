@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from tablib import Dataset
 import time
+import xlrd
 
 from .models.forms import Form
 
@@ -27,28 +28,51 @@ def index(request):
 @permission_required('perms.input_datafile')
 def upload(request):
     if request.method == 'POST':
-        if not request.FILES['myfile'] is None:
-            ultimo_resource = UltimoResource()
-            dataset = Dataset()
+        if not request.FILES['datafile'] is None:
+            if request.POST.get('source') == 'prestatiemeting':
+                upload_prestatiemeting(request)
 
-            new_records = request.FILES['myfile']
-
-            start = time.time()
-            dataset.load(new_records.read())
-            print('Loading the dataset took:', time.time() - start, 'seconds.')
-
-            dry_run_start = time.time()
-            result = ultimo_resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
-            print('Dry run took:', time.time() - dry_run_start, 'seconds.')
-
-            print('Has errors:', result.has_errors())
-
-            if not result.has_errors():
-                start_import = time.time()
-                ultimo_resource.import_data(dataset, dry_run=False)  # Actually import now
-                print('Import took:', time.time() - start_import, 'seconds.')
+            elif request.POST.get('source') == 'ultimo':
+                upload_ultimo(request)
 
     return render(request, 'data/upload.html')
+
+
+def upload_ultimo(request):
+    ultimo_resource = UltimoResource()
+    dataset = Dataset()
+
+    start = time.time()
+    dataset.load(request.FILES['datafile'].read())
+    print('Loading the dataset took:', time.time() - start, 'seconds.')
+
+    dry_run_start = time.time()
+    result = ultimo_resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
+    print('Dry run took:', time.time() - dry_run_start, 'seconds.')
+
+    print('Has errors:', result.has_errors())
+
+    if not result.has_errors():
+        start_import = time.time()
+        ultimo_resource.import_data(dataset, dry_run=False)  # Actually import now
+        print('Import took:', time.time() - start_import, 'seconds.')
+
+
+def upload_prestatiemeting(request):
+    data = request.FILES['datafile']
+    book = xlrd.open_workbook(file_contents=data.read())
+    sheet = book.sheet_by_index(0)
+
+    pm = Prestatiemeting.objects.get(id=int(sheet.cell_value(0, 0).split('=')[1]))
+    question_amount = int(sheet.cell_value(0, 1).split('=')[1])
+
+    for i in range(question_amount):
+        question_number = int(sheet.cell_value(i + 1, 0))
+        answer_gradation = sheet.cell_value(i + 1, 1).split('.', 1)[0]
+        question = PrestatiemetingQuestion.objects.get(number=question_number)
+        answer = question.prestatiemetinganswer_set.get(gradation__letter=answer_gradation)
+        pmr = PrestatiemetingResult(prestatiemeting=pm, question=question, answer=answer)
+        pmr.save()
 
 
 @login_required
@@ -132,12 +156,6 @@ def prestatiemeting(request, prestatiemeting_id):
         return redirect('data:forms')
 
     return render(request, 'data/prestatiemeting.html', {'prestatiemeting': pm, 'questions': questions, 'themes': themes})
-
-
-@login_required
-@permission_required('perms.view_forms')
-def upload_prestatiemeting(request, project_id):
-    return render(request, 'data/prestatiemeting_config.html')
 
 
 def export_excel(request, prestatiemeting_id):
