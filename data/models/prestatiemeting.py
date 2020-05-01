@@ -27,6 +27,7 @@ class PrestatiemetingQuestion(models.Model):
     question = models.TextField()
     about = models.CharField(max_length=2, choices=ABOUT_CHOICES)
     theme = models.ForeignKey(PrestatiemetingTheme, on_delete=models.CASCADE)
+    weight = models.IntegerField()
 
     def __str__(self):
         return f'Question number: {self.number}'
@@ -44,6 +45,7 @@ class Prestatiemeting(models.Model):
 class PrestatiemetingGradation(models.Model):
     letter = models.CharField(max_length=1, primary_key=True)
     gradation = models.CharField(max_length=10)
+    score = models.IntegerField()
 
     def __str__(self):
         return f'{self.letter}: {self.gradation}'
@@ -58,6 +60,7 @@ class PrestatiemetingAnswer(models.Model):
         return f'{self.gradation.letter}. {self.gradation.gradation} - {self.answer}'
 
 
+# overbodig i.v.m. prestatiemetingresult?
 class PrestatiemetingBeoordeling(models.Model):
     explanation = models.TextField()
     answer = models.ForeignKey(PrestatiemetingAnswer, on_delete=models.CASCADE)

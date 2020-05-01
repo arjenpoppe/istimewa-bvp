@@ -12,6 +12,9 @@ from .models.forms import Form
 from .models.prestatiemeting import PrestatiemetingQuestion, PrestatiemetingTheme, Prestatiemeting, \
     PrestatiemetingConfig, PrestatiemetingResult, PrestatiemetingAnswer
 
+from vpi.models import VPIValue, VPI
+from vpi.vpis.prestatiemeting import calc_prestatiemeting
+
 from .resources import UltimoResource
 from data.helpers.excel import export_prestatiemeting
 
@@ -65,8 +68,14 @@ def upload_prestatiemeting(request):
 
     pm = Prestatiemeting.objects.get(id=int(sheet.cell_value(0, 0).split('=')[1]))
     question_amount = int(sheet.cell_value(0, 1).split('=')[1])
+    print('question amount:', question_amount)
+
+    # TODO validate prestatiemeting
+    # delete previous results of this same prestatiemeting
+    PrestatiemetingResult.objects.filter(prestatiemeting=pm).delete()
 
     for i in range(question_amount):
+        print('loop index:', i)
         question_number = int(sheet.cell_value(i + 1, 0))
         answer_gradation = sheet.cell_value(i + 1, 1).split('.', 1)[0]
         question = PrestatiemetingQuestion.objects.get(number=question_number)
@@ -74,6 +83,9 @@ def upload_prestatiemeting(request):
         pmr = PrestatiemetingResult(prestatiemeting=pm, question=question, answer=answer)
         pmr.save()
 
+    # save VPI value
+    val = VPIValue(vpi=VPI.objects.get(id=1), value=calc_prestatiemeting(pm.id))
+    val.save()
 
 @login_required
 @permission_required('perms.view_forms')
@@ -158,6 +170,8 @@ def prestatiemeting(request, prestatiemeting_id):
     return render(request, 'data/prestatiemeting.html', {'prestatiemeting': pm, 'questions': questions, 'themes': themes})
 
 
+@login_required
+@permission_required('perms.view_forms')
 def export_excel(request, prestatiemeting_id):
     output = export_prestatiemeting(prestatiemeting_id)
     output.seek(0)

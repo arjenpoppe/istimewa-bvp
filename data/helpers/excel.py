@@ -10,7 +10,7 @@ def export_prestatiemeting(prestatiemeting_id):
     questions = []
 
     for config in configs:
-        if config.question.about == 'ON':
+        if config.question.about == config.question.OPDRACHTNEMER:
             questions.append(config.question)
 
     themes = []

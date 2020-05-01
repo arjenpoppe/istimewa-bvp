@@ -20,7 +20,7 @@
                     {% for question in questions %}
                         {% if question.theme == theme %}
                             <fieldset class="form-group">
-                                <label for="answer"><b>{{ question.question }}</b></label>
+                                <label for="answer"><b>{{ question.number }}. {{ question.question }}</b></label>
                                 {% for answer in question.prestatiemetinganswer_set.all %}
                                     <div class="form-check" id="answer">
                                         <input class="form-check-input" type="radio" name="question_{{ question.number }}" id="option{{ answer.id }}" value="{{ answer.id }}" required>

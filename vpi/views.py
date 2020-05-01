@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.views import generic
 
 from .models import VPI
+from .vpis.prestatiemeting import calc_prestatiemeting
 
 def index(request):
     return render(request, 'vpi/index.html')
@@ -14,6 +15,7 @@ def index(request):
 @login_required
 @permission_required('perms.view_dashboard')
 def search(request):
+    calc_prestatiemeting()
     ctx = {}
     url_parameter = request.GET.get("q")
 
