@@ -1,25 +1,15 @@
 import io
 
 import xlsxwriter
+from django.shortcuts import get_object_or_404
 
-from data.models.prestatiemeting import PrestatiemetingConfig, Prestatiemeting, PrestatiemetingQuestion
+from data.models.prestatiemeting import PrestatiemetingConfig, Prestatiemeting
 
 
 def export_prestatiemeting(prestatiemeting_id):
-    configs = PrestatiemetingConfig.objects.filter(prestatiemeting=Prestatiemeting.objects.get(id=prestatiemeting_id))
-    questions = []
-
-    for config in configs:
-        if config.question.about == config.question.OPDRACHTNEMER:
-            questions.append(config.question)
-
-    themes = []
-
-    for question in questions:
-        if question.theme not in themes:
-            themes.append(question.theme)
-
-    print(questions)
+    pm = get_object_or_404(Prestatiemeting, id=prestatiemeting_id)
+    questions = pm.get_questions_on()
+    themes = pm.get_distinct_themes_on()
 
     meta_data_rows_required = len(questions) + 1
 
@@ -66,7 +56,8 @@ def export_prestatiemeting(prestatiemeting_id):
     worksheet.set_column('A:C', 80, workbook.add_format({'text_wrap': True}))
 
     # Write static data to file
-    worksheet.merge_range(row - 1, col, row - 1, col + 2, 'BEOORDELING VAN OPDRACHTNEMER DOOR OPDRACHTGEVER', title_format)
+    worksheet.merge_range(row - 1, col, row - 1, col + 2, 'BEOORDELING VAN OPDRACHTNEMER DOOR OPDRACHTGEVER',
+                          title_format)
 
     worksheet.protect()
 

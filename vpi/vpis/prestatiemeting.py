@@ -1,7 +1,7 @@
-from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult
+from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult, PrestatiemetingQuestion
 
 
-def calc_prestatiemeting(pm_id=1, about='ON'):
+def calc_klanttevredenheid(pm_id=1, about=PrestatiemetingQuestion.OPDRACHTNEMER):
     pm = Prestatiemeting.objects.get(id=pm_id)
     result_list = PrestatiemetingResult.objects.filter(prestatiemeting=pm).filter(question__about=about)
 

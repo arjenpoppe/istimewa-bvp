@@ -4,8 +4,6 @@
 {% block title %}{% block page_header %}Formulieren{% endblock page_header %}{% endblock title %}
 
 {% block content %}
-{#    <a href="{% url 'data:prestatiemeting' %}">Prestatiemeting uitvoeren</a>#}
-{#    <a href="{% url 'data:configure_prestatiemeting' %}">Prestatiemeting configureren</a>#}
     {% include 'data/forms_table.html' with forms=forms %}
 
     <hr>
@@ -31,8 +29,6 @@
             </form>
         </div>
     </div>
-
-
 {% endblock content%}
 
 {% block scripts %}

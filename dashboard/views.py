@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import permission_required, login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
 from vpi.models import VPI, VPIValue
@@ -9,16 +9,8 @@ from .models import Dashboard
 @login_required
 @permission_required('perms.view_dashboard', login_url='login')
 def dashboard(request, dashboard_id):
-    db = Dashboard.objects.get(id=dashboard_id)
-    vpis = db.vpis.all()
-
-    context = {
-        'vpis': vpis
-    }
-
-    for vpi in vpis:
-        print(vpi.name)
-    return render(request, 'dashboard/dashboard.html', context=context)
+    vpis = get_object_or_404(Dashboard, id=dashboard_id).vpis.all()
+    return render(request, 'dashboard/dashboard.html', {'vpis': vpis})
 
 
 @login_required
