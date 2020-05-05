@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from data.models.project import ProjectActiviteit, ProjectFase
 from .models import Project, ProjectGoal, VPI, VPITarget, VPIValue, Opdrachtgever, Address, OpdrachtgeverContactPersoon
 
 
@@ -28,4 +30,6 @@ admin.site.register(VPITarget)
 admin.site.register(VPIValue)
 admin.site.register(Opdrachtgever, OpdrachtgeverAdmin)
 admin.site.register(Address)
+admin.site.register(ProjectActiviteit)
+admin.site.register(ProjectFase)
 

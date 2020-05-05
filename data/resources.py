@@ -1,5 +1,5 @@
 from import_export import resources
-from .models.sources import Ultimo
+from .models.sources import Ultimo, Sap
 from import_export.fields import Field
 
 
@@ -77,3 +77,8 @@ class UltimoResource(resources.ModelResource):
     class Meta:
         model = Ultimo
         import_id_fields = ('code',)
+
+
+class SapResource(resources.ModelResource):
+    class Meta:
+        model = Sap

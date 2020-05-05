@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('green', models.CharField(max_length=10)),
                 ('yellow', models.CharField(max_length=20)),
                 ('red', models.CharField(max_length=20)),
-                ('project', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='data.Project')),
+                ('project', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='data.models.project')),
                 ('vpi_id', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='data.VPI')),
             ],
         ),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('number', models.IntegerField()),
                 ('goal', models.TextField()),
-                ('project', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='data.Project')),
+                ('project', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='data.models.project')),
             ],
         ),
     ]

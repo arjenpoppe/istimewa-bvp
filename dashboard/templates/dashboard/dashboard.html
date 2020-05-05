@@ -6,39 +6,78 @@
 {% block page_header %}Dashboard{% endblock page_header %}
 {% block content %}
   <!-- Content Row -->
-
-            <div class="row">
-                {% for vpi in vpis %}
-                    {% if vpi.chart_type == vpi.CARD %}
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                          <div class="card border-left-{{ vpi.vpivalue_set.last.get_target_color }} shadow h-100 py-2">
-                            <div class="card-body">
-                              <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                  <a href="{% url 'vpi:detail' vpi.id %}" class="text-xs font-weight-bold text-{{ vpi.vpivalue_set.last.get_target_color }} text-uppercase mb-1">{{vpi.name}}</a>
-                                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.vpivalue_set.last.value|floatformat:1 }} {{ vpi.measuring_unit }}</div>
-                                </div>
-                                <div class="col-auto">
-                                  <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+    <div class="row">
+        {% for vpi in vpis %}
+            {% if vpi.chart_type == vpi.CARD %}
+                <!-- Earnings (Monthly) Card Example -->
+                <div class="col-xl-3 col-md-6 mb-4">
+                  <div class="card border-left-{{ vpi.vpivalue_set.last.get_target_color }} shadow h-100 py-2">
+                    <div class="card-body">
+                      <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                          <a href="{% url 'vpi:detail' vpi.id %}" class="text-xs font-weight-bold text-{{ vpi.vpivalue_set.last.get_target_color }} text-uppercase mb-1">{{vpi.name}}</a>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.vpivalue_set.last.value|floatformat:1 }} {{ vpi.measuring_unit }}</div>
                         </div>
-                    {% endif %}
-                {% endfor %}
-              </div>
+                        <div class="col-auto">
+                          <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+      </div>
 
-
-
-
-  <!-- Content Row -->
-
-  <div class="row">
-
+    <div class="row">
+    {% for vpi in vpis %}
+        {% if vpi.chart_type == vpi.PIE %}
+                <div class="col-xl-5 col-lg-5">
+                  <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">P/025920: fase verdeling</h6>
+                      <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                          <div class="dropdown-header">Dropdown Header:</div>
+                          <a class="dropdown-item" href="#">Action</a>
+                          <a class="dropdown-item" href="#">Another action</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                      </div>
+                    </div>
+                      <!-- Card Body -->
+                    <div class="card-body">
+                      <div class="chart-pie pt-4 pb-2">
+                        <canvas id="vpi_{{ vpi.id }}"></canvas>
+                      </div>
+                      <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                          <i class="fas fa-circle text-primary"></i> Inrichting
+                        </span>
+                        <span class="mr-2">
+                          <i class="fas fa-circle text-success"></i> Ontwerpen
+                        </span>
+                          <span class="mr-2">
+                          <i class="fas fa-circle" style="color: #36b9cc;"></i> Uitvoeren
+                        </span>
+                          <span class="mr-2">
+                          <i class="fas fa-circle" style="color: #DF9C55;"></i> Opleveren
+                        </span>
+                          <span class="mr-2">
+                          <i class="fas fa-circle" style="color: #DF95A3;"></i> Overig
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            {% endif %}
+    {% endfor %}
     <!-- Area Chart -->
-    <div class="col-xl-8 col-lg-7">
+    <div class="col-xl-7 col-lg-7">
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -64,46 +103,7 @@
         </div>
       </div>
     </div>
-
-    <!-- Pie Chart -->
-    <div class="col-xl-4 col-lg-5">
-      <div class="card shadow mb-4">
-        <!-- Card Header - Dropdown -->
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-          <div class="dropdown no-arrow">
-            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-              <div class="dropdown-header">Dropdown Header:</div>
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
-          </div>
-        </div>
-        <!-- Card Body -->
-        <div class="card-body">
-          <div class="chart-pie pt-4 pb-2">
-            <canvas id="myPieChart"></canvas>
-          </div>
-          <div class="mt-4 text-center small">
-            <span class="mr-2">
-              <i class="fas fa-circle text-primary"></i> Direct
-            </span>
-            <span class="mr-2">
-              <i class="fas fa-circle text-success"></i> Social
-            </span>
-            <span class="mr-2">
-              <i class="fas fa-circle text-info"></i> Referral
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 
   <!-- Content Row -->
   <div class="row">
@@ -233,4 +233,50 @@
   <!-- Page level custom scripts -->
   <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
   <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+  {% for vpi in vpis %}
+    {% if vpi.chart_type == vpi.PIE %}
+        <script>
+
+        var config = {
+          type: 'pie',
+          data: {
+            datasets: [{
+              data: {{ data|safe }},
+              backgroundColor: [
+                '#4e73df', '#1cc88a', '#36b9cc', '#DF9C55', '#DF95A3'
+              ],
+              hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#DF854E', '#DF7CA0'],
+              hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }],
+            labels: {{ labels|safe }}
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            tooltips: {
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              caretPadding: 10,
+            },
+            legend: {
+              display: false
+            },
+            cutoutPercentage: 80,
+          },
+        };
+
+        window.onload = function() {
+          var context = document.getElementById('vpi_{{ vpi.id }}').getContext('2d');
+          window.myPie = new Chart(context, config);
+        };
+
+  </script>
+    {% endif %}
+  {% endfor %}
+
 {% endblock %}

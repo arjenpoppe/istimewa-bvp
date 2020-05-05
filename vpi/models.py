@@ -38,6 +38,7 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     opdrachtgever = models.ForeignKey(Opdrachtgever, on_delete=models.CASCADE, null=True)
+    object_amount = models.IntegerField(default=1)
 
     def __str__(self):
         return f'{self.number}: {self.name}'

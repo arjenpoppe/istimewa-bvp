@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 
 
 class Ultimo(models.Model):
@@ -75,5 +76,43 @@ class Ultimo(models.Model):
     def __str__(self):
         return self.code
 
-    def _testthingy(self):
-        return'test'
+
+class Sap(models.Model):
+    object = models.CharField(max_length=100, null=True, blank=True)
+    wbs_element = models.CharField(max_length=100, null=True, blank=True)
+    objectomschrijving = models.CharField(max_length=100, null=True, blank=True)
+    kost_soort = models.CharField(max_length=100, null=True, blank=True)
+    omschrijving = models.CharField(max_length=255, null=True, blank=True)
+    personeelsnummer = models.CharField(max_length=100, null=True, blank=True)
+    naam_kost_soort = models.CharField(max_length=100, null=True, blank=True)
+    achternaam_voornaam = models.CharField(max_length=100, null=True, blank=True)
+    per = models.IntegerField(blank=True, null=True)
+    aan_afw = models.CharField(max_length=100, null=True, blank=True)
+    parprs = models.CharField(max_length=100, null=True, blank=True)
+    doc_number = models.CharField(max_length=100, null=True, blank=True)
+    doc_datum = models.DateField(blank=True, null=True)
+    boek_datum = models.DateField(blank=True, null=True)
+    hoeveelheid_totaal = models.FloatField(blank=True, null=True)
+    he = models.CharField(max_length=100, null=True, blank=True)
+    waarde_co_valuta = models.FloatField(blank=True, null=True)
+    omschrijving2 = models.CharField(max_length=100, null=True, blank=True)
+    categorie = models.CharField(max_length=100, null=True, blank=True)
+    jaar = models.CharField(max_length=255, null=True, blank=True)
+    maand = models.CharField(max_length=255, null=True, blank=True)
+    week = models.CharField(max_length=255, null=True, blank=True)
+    surcharge = models.CharField(max_length=255, null=True, blank=True)
+    overhead = models.CharField(max_length=255, null=True, blank=True)
+    besteltekst = models.TextField(blank=True, null=True)
+
+    def totaal_uren_per_activiteit(self):
+        data = self.objects.values('object', 'objectomschrijving') \
+            .filter(he='H') \
+            .order_by('object') \
+            .annotate(total=Sum('hoeveelheid_totaal'))
+
+        for row in data:
+            print(row)
+        return data
+
+
+
