@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% block page_header %}Projecten{% endblock page_header %}{% endblock title %}
+
+{% block content %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 id="search-results-title" class="m-0 font-weight-bold text-primary">Projecten</h6>
+        </div>
+        <div class="card-body" id="replaceable-content">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="formsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nummer</th>
+                            <th>Naam</th>
+                            <th>Omschrijving</th>
+                            <th>Opdrachtgever</th>
+                            <th>Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                            <tr>
+                                <td>{{ project.pk }}</td>
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.description }}</td>
+                                <td>{{ project.opdrachtgever }}</td>
+                                <td><a class="btn btn-primary btn-sm" href="{% url 'dashboard:project_dashboard' project.encode_number %}">Naar dashboard</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content%}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'data/js/data.js' %}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+{% endblock %}

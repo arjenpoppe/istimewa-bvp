@@ -104,7 +104,8 @@ def save_project_activiteiten(project):
     unique_activiteit_codes = Sap.objects.order_by('object').values('object', 'objectomschrijving').distinct()
 
     for data in unique_activiteit_codes:
-        ProjectActiviteit.objects.get_or_create(project=project, code=data['object'], description=data['objectomschrijving'])
+        ProjectActiviteit.objects.get_or_create(project=project, code=data['object'],
+                                                description=data['objectomschrijving'])
 
 
 def upload_ultimo(request, resource):
@@ -195,17 +196,17 @@ def prestatiemeting_config(request, prestatiemeting_id):
 
 
 def get_prestatiemetingen(request):
-        project = Project.objects.get(pk=request.GET.get('project_number', None))
-        numbers = []
-        prestatiemetingen = Prestatiemeting.objects.filter(project=project)
-        for prestatiemeting in prestatiemetingen:
-            numbers.append(prestatiemeting.number)
+    project = Project.objects.get(pk=request.GET.get('project_number', None))
+    numbers = []
+    prestatiemetingen = Prestatiemeting.objects.filter(project=project)
+    for pm in prestatiemetingen:
+        numbers.append(pm.number)
 
-        data = {
-            'numbers': numbers
-        }
+    data = {
+        'numbers': numbers
+    }
 
-        return JsonResponse(data)
+    return JsonResponse(data)
 
 
 @login_required
@@ -259,3 +260,9 @@ def export_excel(request, prestatiemeting_id):
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
 
     return response
+
+
+def projects_view(request):
+    projects = Project.objects.all()
+    return render(request, 'data/projects.html', {'projects': projects})
+

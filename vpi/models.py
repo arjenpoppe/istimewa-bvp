@@ -1,3 +1,6 @@
+import urllib.parse
+
+from django.contrib.admin.utils import quote
 from django.db import models
 
 # from data.models.prestatiemeting import Prestatiemeting
@@ -35,27 +38,6 @@ class OpdrachtgeverContactPersoon(models.Model):
         return f'{self.firstname} {self.lastname}'
 
 
-class Project(models.Model):
-    number = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    opdrachtgever = models.ForeignKey(Opdrachtgever, on_delete=models.CASCADE, null=True)
-    object_amount = models.IntegerField(default=1)
-
-    def __str__(self):
-        return f'{self.number}: {self.name}'
-
-
-
-class ProjectGoal(models.Model):
-    number = models.IntegerField()
-    project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    goal = models.TextField()
-
-    def __str__(self):
-        return f'{self.project.number}:{self.project.name} - Projectdoel {self.number}'
-
-
 class VPI(models.Model):
     AREA = 'AC'
     CARD = 'CA'
@@ -75,10 +57,58 @@ class VPI(models.Model):
     theme = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=20, blank=True, null=True)
     chart_type = models.CharField(max_length=2, choices=CHOICES)
-    project = models.ManyToManyField(Project, blank=True)
+    label = models.CharField(max_length=20, default='test')
 
     def __str__(self):
         return f'{self.name}'
+
+
+class CombinedVPI(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    theme = models.CharField(max_length=100, blank=True, null=True)
+    type = models.CharField(max_length=20, blank=True, null=True)
+    chart_type = models.CharField(max_length=2, choices=VPI.CHOICES)
+    vpis = models.ManyToManyField(VPI)
+
+    def get_last_value_list(self):
+        data = []
+        for vpi in self.vpis.all():
+            data.append(vpi.vpivalue_set.get(vpi=vpi).value)
+
+        return data
+
+    def get_labels_list(self):
+        labels = []
+        for vpi in self.vpis.all():
+            labels.append(vpi.label)
+
+        return labels
+
+
+class Project(models.Model):
+    number = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    opdrachtgever = models.ForeignKey(Opdrachtgever, on_delete=models.CASCADE, null=True)
+    object_amount = models.IntegerField(default=1)
+    vpis = models.ManyToManyField(VPI, blank=True)
+    combined_vpis = models.ManyToManyField(CombinedVPI, blank=True)
+
+    def __str__(self):
+        return f'{self.number}: {self.name}'
+
+    def encode_number(self):
+        return quote(self.number)
+
+
+class ProjectGoal(models.Model):
+    number = models.IntegerField()
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    goal = models.TextField()
+
+    def __str__(self):
+        return f'{self.project.number}:{self.project.name} - Projectdoel {self.number}'
 
 
 class VPITarget(models.Model):

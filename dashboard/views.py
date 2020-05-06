@@ -1,8 +1,9 @@
+from django.contrib.admin.utils import unquote
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
-from vpi.models import VPI, VPIValue
+from vpi.models import VPI, VPIValue, Project, CombinedVPI
 from .models import Dashboard
 
 
@@ -10,26 +11,15 @@ from .models import Dashboard
 @permission_required('perms.view_dashboard', login_url='login')
 def dashboard(request, dashboard_id):
     vpis = get_object_or_404(Dashboard, id=dashboard_id).vpis.all()
+    return render(request, 'dashboard/dashboard.html', {'vpis': vpis})
 
-    data = []
-    labels = ['inrichten', 'ontwerpen', 'uitvoeren', 'opleveren', 'overig']
 
-    percentage1 = int(VPIValue.objects.get(vpi_id=3).value)
-    percentage2 = int(VPIValue.objects.get(vpi_id=4).value)
-    percentage3 = int(VPIValue.objects.get(vpi_id=5).value)
-    percentage4 = int(VPIValue.objects.get(vpi_id=6).value)
-    percentage5 = int(VPIValue.objects.get(vpi_id=7).value)
-    data.append(percentage1)
-    data.append(percentage2)
-    data.append(percentage3)
-    data.append(percentage4)
-    data.append(percentage5)
+@login_required
+@permission_required('perms.view_dashboard', login_url='login')
+def project_dashboard(request, project_number):
+    project = Project.objects.get(pk=unquote(project_number))
 
-    print(data)
-
-    return render(request, 'dashboard/dashboard.html', {'vpis': vpis,
-                                                        'data': data,
-                                                        'labels': labels})
+    return render(request, 'dashboard/project_dashboard.html', {'project': project})
 
 
 @login_required

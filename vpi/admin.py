@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from data.models.project import ProjectActiviteit, ProjectFase
-from .models import Project, ProjectGoal, VPI, VPITarget, VPIValue, Opdrachtgever, Address, OpdrachtgeverContactPersoon
+from .models import Project, ProjectGoal, VPI, VPITarget, VPIValue, Opdrachtgever, Address, OpdrachtgeverContactPersoon, \
+    CombinedVPI
 
 
 class ValueInline(admin.TabularInline):
@@ -32,4 +33,5 @@ admin.site.register(Opdrachtgever, OpdrachtgeverAdmin)
 admin.site.register(Address)
 admin.site.register(ProjectActiviteit)
 admin.site.register(ProjectFase)
+admin.site.register(CombinedVPI)
 

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% block page_header %}Dashboard - {{ project }}{% endblock page_header %}{% endblock title %}
+
+
+{% block content %}
+    <div class="row">
+    {% for combined_vpi in project.combined_vpis.all %}
+        {% if combined_vpi.chart_type == 'PC' %}
+                <div class="col-xl-4 col-lg-5">
+                  <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">{{ combined_vpi.name }}</h6>
+                      <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                          <div class="dropdown-header">Dropdown Header:</div>
+                          <a class="dropdown-item" href="#">Action</a>
+                          <a class="dropdown-item" href="#">Another action</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                      </div>
+                    </div>
+                      <!-- Card Body -->
+                    <div class="card-body">
+                      <div class="chart-pie pt-4 pb-2">
+                        <canvas id="vpi_{{ combined_vpi.id }}"></canvas>
+                      </div>
+                      <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                          <i class="fas fa-circle text-primary"></i> Inrichting
+                        </span>
+                        <span class="mr-2">
+                          <i class="fas fa-circle text-success"></i> Ontwerp
+                        </span>
+                          <span class="mr-2">
+                          <i class="fas fa-circle" style="color: #36b9cc;"></i> Uitvoer
+                        </span>
+                          <span class="mr-2">
+                          <i class="fas fa-circle" style="color: #DF9C55;"></i> Oplevering
+                        </span>
+                          <span class="mr-2">
+                          <i class="fas fa-circle" style="color: #DF95A3;"></i> Overig
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            {% endif %}
+    {% endfor %}
+{% endblock content %}
+
+{% block scripts %}
+  {{ block.super }}
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+
+  <!-- Page level custom scripts -->
+  <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
+  <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+  {% for combined_vpi in project.combined_vpis.all %}
+    {% if combined_vpi.chart_type == 'PC' %}
+        <script>
+
+        var config = {
+          type: 'pie',
+          data: {
+            datasets: [{
+              data: {{ combined_vpi.get_last_value_list|safe }},
+              backgroundColor: [
+                '#4e73df', '#1cc88a', '#36b9cc', '#DF9C55', '#DF95A3'
+              ],
+              hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#DF854E', '#DF7CA0'],
+              hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }],
+            labels: {{ combined_vpi.get_labels_list|safe }}
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            tooltips: {
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              caretPadding: 10,
+            },
+            legend: {
+              display: false
+            },
+            cutoutPercentage: 80,
+          },
+        };
+
+        window.onload = function() {
+          var context = document.getElementById('vpi_{{ combined_vpi.id }}').getContext('2d');
+          window.myPie = new Chart(context, config);
+        };
+
+  </script>
+    {% endif %}
+  {% endfor %}
+
+{% endblock %}
