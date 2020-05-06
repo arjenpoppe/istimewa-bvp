@@ -274,11 +274,9 @@
             {% block header_button %}<a href="{% url 'dashboard:reports' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>{% endblock %}
           </div>
           {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="message-{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
+            {% for message in messages %}
+                <div {% if message.tags %} class="card border-bottom-{{ message.tags }} mb-4 p-1"{% endif %}>{{ message }}</div>
+            {% endfor %}
           {% endif %}
           {% block content %}
           {% endblock content %}

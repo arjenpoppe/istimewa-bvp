@@ -1,5 +1,7 @@
 from django.db import models
 
+# from data.models.prestatiemeting import Prestatiemeting
+
 
 class Address(models.Model):
     city = models.CharField(max_length=30)
@@ -42,6 +44,7 @@ class Project(models.Model):
 
     def __str__(self):
         return f'{self.number}: {self.name}'
+
 
 
 class ProjectGoal(models.Model):

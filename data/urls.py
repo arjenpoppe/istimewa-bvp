@@ -11,4 +11,5 @@ urlpatterns = [
     path('prestatiemeting/<int:prestatiemeting_id>/', views.prestatiemeting, name='prestatiemeting'),
     path('prestatiemeting/<int:prestatiemeting_id>/config/', views.prestatiemeting_config, name='prestatiemeting_config'),
     path('prestatiemeting/<int:prestatiemeting_id>/export/', views.export_excel, name='export_excel'),
+    path('ajax/get_pms', views.get_prestatiemetingen, name='get_prestatiemetingen')
 ]

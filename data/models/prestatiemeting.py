@@ -1,6 +1,9 @@
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F
+from django.http import request
 from django.shortcuts import get_list_or_404, get_object_or_404
 
 from vpi.models import Project, VPIValue
@@ -42,6 +45,8 @@ class Prestatiemeting(models.Model):
     number = models.IntegerField(null=True)
     filled_on = models.DateTimeField(null=True)
     filled_og = models.DateTimeField(null=True)
+    submitted_by = models.ForeignKey(User, related_name='%(class)s_submitted', on_delete=models.CASCADE, null=True)
+    uploaded_by = models.ForeignKey(User, related_name='%(class)s_uploaded', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'Project: {self.project.number}'
@@ -87,6 +92,12 @@ class Prestatiemeting(models.Model):
             answer = question.prestatiemetinganswer_set.get(gradation__pk=answer_gradation)
             pmr = PrestatiemetingResult(prestatiemeting_id=self.id, question=question, answer=answer)
             pmr.save()
+
+    def is_submitted_by_og(self):
+        return self.filled_og is not None
+
+    def is_submitted_by_on(self):
+        return self.filled_on is not None
 
 
 class PrestatiemetingGradation(models.Model):

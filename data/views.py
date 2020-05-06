@@ -5,7 +5,7 @@ import xlrd
 import pandas as pd
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from tablib import Dataset
 
@@ -58,7 +58,6 @@ def upload_sap(request):
     for project in projects:
         if project.number in data['Object'].iloc[0]:
             uploaded_project = project
-
 
     data.rename(columns={
         data.columns[0]: "object",
@@ -140,6 +139,8 @@ def upload_prestatiemeting(request):
         pm = Prestatiemeting.objects.get(pk=prestatiemeting_id)
 
         pm.save_excel_results(sheet)
+        pm.filled_og = datetime.now()
+        pm.uploaded_by = request.user
 
         val = VPIValue(vpi_id=1, value=calc_klanttevredenheid(pm.id))
         val.save()
@@ -153,12 +154,18 @@ def upload_prestatiemeting(request):
 def forms(request):
     if request.POST:
         project = Project.objects.get(pk=request.POST.get('project_select'))
-        pm = Prestatiemeting.objects.get_or_create(project=project)
+        pm_select = request.POST.get('pm_select')
+        pm = Prestatiemeting.objects.get_or_create(project=project, number=pm_select)
 
         if 'prestatiemeting_conf' in request.POST:
-            return redirect('data:prestatiemeting_config', prestatiemeting_id=pm[0].id)
+            if pm[0].is_submitted_by_og() is False and pm[0].is_submitted_by_on() is False:
+                return redirect('data:prestatiemeting_config', prestatiemeting_id=pm[0].id)
+            else:
+                messages.error(request, 'Prestatiemeting is al ingevuld. Configuratie kan niet meer worden'
+                                        ' gewijzigd.')
         if 'prestatiemeting_fill' in request.POST:
             return redirect('data:prestatiemeting', prestatiemeting_id=pm[0].id)
+
         if 'prestatiemeting_upload' in request.POST:
             print('Go to prestatiemeting upload')
 
@@ -180,11 +187,25 @@ def prestatiemeting_config(request, prestatiemeting_id):
 
         return redirect('data:forms')
 
-    pm = Prestatiemeting.objects.get(prestatiemeting_id=prestatiemeting_id)
+    pm = Prestatiemeting.objects.get(pk=prestatiemeting_id)
     themes = PrestatiemetingTheme.objects.all()
 
     return render(request, 'data/prestatiemeting_config.html', {'prestatiemeting': pm,
                                                                 'themes': themes})
+
+
+def get_prestatiemetingen(request):
+        project = Project.objects.get(pk=request.GET.get('project_number', None))
+        numbers = []
+        prestatiemetingen = Prestatiemeting.objects.filter(project=project)
+        for prestatiemeting in prestatiemetingen:
+            numbers.append(prestatiemeting.number)
+
+        data = {
+            'numbers': numbers
+        }
+
+        return JsonResponse(data)
 
 
 @login_required
@@ -201,6 +222,7 @@ def prestatiemeting(request, prestatiemeting_id):
     questions = pm.get_questions_og()
 
     if request.POST:
+        PrestatiemetingResult.objects.filter(prestatiemeting_id=prestatiemeting_id).delete()
         print(request.POST)
         for question in questions:
             print(question)
@@ -209,9 +231,16 @@ def prestatiemeting(request, prestatiemeting_id):
                                         answer=PrestatiemetingAnswer.objects.get(id=answer_id))
             pmr.save()
 
-        pm.dateTime = datetime.now()
+        pm.filled_on = datetime.now()
+        pm.submitted_by = request.user
         pm.save()
         return redirect('data:forms')
+
+    if pm.is_submitted_by_on():
+        messages.warning(request,
+                         f'Deze prestatiemeting is al ingevuld op {pm.filled_on.astimezone().strftime("%d-%m-%Y %H:%M")}'
+                         f' door {pm.submitted_by.first_name} {pm.submitted_by.last_name}'
+                         f' ({pm.submitted_by.email}). Voorgaande resultaten worden overschreven.')
 
     return render(request, 'data/prestatiemeting.html', {'prestatiemeting': pm})
 
