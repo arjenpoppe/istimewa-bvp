@@ -23,7 +23,7 @@
                         <select name="project_select" class="form-control col-6" id="project-select">
                             <option value="">Selecteer project...</option>
                             {% for project in projects %}
-                                <option value="{{ project.number }}">{{ project.number }}: {{ project.name }}</option>
+                                <option value="{{ project.number }}">{{ project.number }}: {{ project.name }} - {{ project.opdrachtgever }}</option>
                             {% endfor %}
                         </select>
                     </div>

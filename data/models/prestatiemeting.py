@@ -34,6 +34,7 @@ class PrestatiemetingQuestion(models.Model):
     question = models.TextField()
     about = models.CharField(max_length=2, choices=ABOUT_CHOICES)
     theme = models.ForeignKey(PrestatiemetingTheme, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100)
     weight = models.IntegerField()
 
     def __str__(self):
@@ -98,6 +99,43 @@ class Prestatiemeting(models.Model):
 
     def is_submitted_by_on(self):
         return self.filled_on is not None
+
+    def is_configured(self):
+        return len(PrestatiemetingConfig.objects.filter(prestatiemeting=self)) > 0
+
+    def get_score_on(self):
+        total_weight = 0
+        result_list = self.prestatiemetingresult_set.filter(question__about='ON')
+
+        for result in result_list:
+            total_weight += result.question.weight
+
+        total = 0
+        for result in result_list:
+            rw = result.question.weight / total_weight
+            total += rw * result.answer.gradation.score
+
+        return total
+
+    def get_score_og(self):
+        total_weight = 0
+        result_list = self.prestatiemetingresult_set.filter(question__about='OG')
+
+        for result in result_list:
+            total_weight += result.question.weight
+
+        total = 0
+        for result in result_list:
+            rw = result.question.weight / total_weight
+            total += rw * result.answer.gradation.score
+
+        return total
+
+    def get_date_finished(self):
+        if self.filled_og > self.filled_on:
+            return self.filled_og
+        else:
+            return self.filled_on
 
 
 class PrestatiemetingGradation(models.Model):

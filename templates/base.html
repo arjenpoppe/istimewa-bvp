@@ -280,11 +280,22 @@
             <h1 class="h3 mb-0 text-gray-800">{% block page_header %}{% endblock page_header %}</h1>
             {% block header_button %}<a href="{% url 'dashboard:reports' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>{% endblock %}
           </div>
+
+
+          <!-- Message section -->
           {% if messages %}
             {% for message in messages %}
-                <div {% if message.tags %} class="card border-bottom-{{ message.tags }} mb-4 p-1"{% endif %}>{{ message }}</div>
+                <div id="message-box" {% if message.tags %} class="card bg-{{ message.tags }} text-white shadow mb-4 p-1 pl-3"{% endif %}>
+                    <div class="message">
+                        {{ message }}
+                    </div>
+{#                        <button class="close float-right" type="button" onclick="remove_message()">#}
+{#                            <span aria-hidden="true">x</span>#}
+{#                        </button>#}
+                </div>
             {% endfor %}
           {% endif %}
+
           {% block content %}
           {% endblock content %}
 
@@ -347,6 +358,14 @@
 
   <!-- Custom scripts for all pages-->
   <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+  <script>
+    function remove_message() {
+    // Removes an element from the document
+    var element = document.getElementById('message-box');
+    element.remove()
+}
+  </script>
 
   {% endblock scripts %}
 

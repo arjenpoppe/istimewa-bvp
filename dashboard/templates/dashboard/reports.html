@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% block page_header %}Rapportages{% endblock page_header %}{% endblock title %}
+
+{% block content %}
+    <div class="col-6 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                Prestatiemetingen
+            </div>
+            <div class="card-body">
+                <form class="form-inline" method="post" action="{% url 'dashboard:report' %}">
+                    {% csrf_token %}
+                    <select name="project_select" class="form-control col-5 mr-4" id="project-select">
+                        <option value="">Selecteer project...</option>
+                        {% for project in projects %}
+                            <option value="{{ project.number }}">{{ project.number }}: {{ project.name }} - {{ project.opdrachtgever }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="pm_select" class="form-control col-3 mr-4" id="pm-select">
+                    </select>
+                    <button type="submit" class="btn btn-primary">Download</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content%}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'dashboard/js/dashboard.js' %}"></script>
+{% endblock %}

@@ -20,9 +20,9 @@ def validate_prestatiemeting_import(sheet):
         question_number = int(sheet.cell_value(i + 1, 0))
         if question_number not in configured_question_numbers:
             return 'niet de correcte configuratie'
-        question = PrestatiemetingQuestion.objects.get(pk=question_number)
-        answer = sheet.cell_value(i + 1, 1)
-        if answer not in PrestatiemetingGradation.objects.values_list('letter'):
+
+        answer = sheet.cell_value(i + 1, 1)[0]
+        if answer not in PrestatiemetingGradation.objects.values_list('letter', flat=True):
             return 'niet alle vragen correct beantwoord'
 
 

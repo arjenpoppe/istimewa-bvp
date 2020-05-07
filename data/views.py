@@ -142,6 +142,7 @@ def upload_prestatiemeting(request):
         pm.save_excel_results(sheet)
         pm.filled_og = datetime.now()
         pm.uploaded_by = request.user
+        pm.save()
 
         val = VPIValue(vpi_id=1, value=calc_klanttevredenheid(pm.id))
         val.save()
@@ -154,21 +155,25 @@ def upload_prestatiemeting(request):
 @permission_required('perms.view_forms')
 def forms(request):
     if request.POST:
+        if 'prestatiemeting_upload' in request.POST:
+            redirect('data:upload')
+
         project = Project.objects.get(pk=request.POST.get('project_select'))
         pm_select = request.POST.get('pm_select')
-        pm = Prestatiemeting.objects.get_or_create(project=project, number=pm_select)
 
         if 'prestatiemeting_conf' in request.POST:
+            pm = Prestatiemeting.objects.get_or_create(project=project, number=pm_select)
             if pm[0].is_submitted_by_og() is False and pm[0].is_submitted_by_on() is False:
                 return redirect('data:prestatiemeting_config', prestatiemeting_id=pm[0].id)
             else:
                 messages.error(request, 'Prestatiemeting is al ingevuld. Configuratie kan niet meer worden'
                                         ' gewijzigd.')
         if 'prestatiemeting_fill' in request.POST:
-            return redirect('data:prestatiemeting', prestatiemeting_id=pm[0].id)
-
-        if 'prestatiemeting_upload' in request.POST:
-            print('Go to prestatiemeting upload')
+            try:
+                pm = Prestatiemeting.objects.get(project=project, number=pm_select)
+                return redirect('data:prestatiemeting', prestatiemeting_id=pm.id)
+            except Prestatiemeting.DoesNotExist:
+                messages.error(request, 'Deze prestatiemeting bestaat nog niet. Configureer deze eerst.')
 
     context = {
         'projects': Project.objects.all(),
@@ -222,6 +227,11 @@ def prestatiemeting(request, prestatiemeting_id):
     pm = get_object_or_404(Prestatiemeting, pk=prestatiemeting_id)
     questions = pm.get_questions_og()
 
+    if not pm.is_configured():
+        messages.error(request, 'Deze prestatiemeting bevat nog geen configuratie. Configureer de prestatiemeting'
+                                ' eerst.')
+        return redirect('data:forms')
+
     if request.POST:
         PrestatiemetingResult.objects.filter(prestatiemeting_id=prestatiemeting_id).delete()
         print(request.POST)
@@ -241,7 +251,8 @@ def prestatiemeting(request, prestatiemeting_id):
         messages.warning(request,
                          f'Deze prestatiemeting is al ingevuld op {pm.filled_on.astimezone().strftime("%d-%m-%Y %H:%M")}'
                          f' door {pm.submitted_by.first_name} {pm.submitted_by.last_name}'
-                         f' ({pm.submitted_by.email}). Voorgaande resultaten worden overschreven.')
+                         f' ({pm.submitted_by.email}). Voorgaande resultaten worden overschreven wanneer dit '
+                         f'formulier wordt opgeslagen.')
 
     return render(request, 'data/prestatiemeting.html', {'prestatiemeting': pm})
 
