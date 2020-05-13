@@ -1,12 +1,7 @@
-from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.db import models
-from django.db.models import F
-from django.http import request
-from django.shortcuts import get_list_or_404, get_object_or_404
 
-from vpi.models import Project, VPIValue
+from django.db import models
+from django.db.models import Avg
 
 
 class PrestatiemetingTheme(models.Model):
@@ -40,9 +35,12 @@ class PrestatiemetingQuestion(models.Model):
     def __str__(self):
         return f'Question number: {self.number}'
 
+    def get_avg_score(self):
+        return PrestatiemetingResult.objects.filter(question=self).aggregate(avg=Avg('answer__gradation__score'))
+
 
 class Prestatiemeting(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(to='data.Project', on_delete=models.CASCADE)
     number = models.IntegerField(null=True)
     filled_on = models.DateTimeField(null=True)
     filled_og = models.DateTimeField(null=True)
@@ -50,7 +48,7 @@ class Prestatiemeting(models.Model):
     uploaded_by = models.ForeignKey(User, related_name='%(class)s_uploaded', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f'Project: {self.project.number}'
+        return f'Project: {self.project}'
 
     def get_distinct_themes(self, about):
         themes = PrestatiemetingTheme.objects.filter(id__in=self.prestatiemetingconfig_set.filter(
@@ -103,9 +101,9 @@ class Prestatiemeting(models.Model):
     def is_configured(self):
         return len(PrestatiemetingConfig.objects.filter(prestatiemeting=self)) > 0
 
-    def get_score_on(self):
+    def get_score(self, about):
         total_weight = 0
-        result_list = self.prestatiemetingresult_set.filter(question__about='ON')
+        result_list = self.prestatiemetingresult_set.filter(question__about=about)
 
         for result in result_list:
             total_weight += result.question.weight
@@ -116,26 +114,25 @@ class Prestatiemeting(models.Model):
             total += rw * result.answer.gradation.score
 
         return total
+
+    def get_score_on(self):
+        return self.get_score(PrestatiemetingQuestion.OPDRACHTNEMER)
 
     def get_score_og(self):
-        total_weight = 0
-        result_list = self.prestatiemetingresult_set.filter(question__about='OG')
-
-        for result in result_list:
-            total_weight += result.question.weight
-
-        total = 0
-        for result in result_list:
-            rw = result.question.weight / total_weight
-            total += rw * result.answer.gradation.score
-
-        return total
+        return self.get_score(PrestatiemetingQuestion.OPDRACHTGEVER)
 
     def get_date_finished(self):
         if self.filled_og > self.filled_on:
             return self.filled_og
         else:
             return self.filled_on
+
+    def is_finished(self):
+        return self.filled_og and self.filled_on
+
+    def get_individual_score(self, question_number):
+        result = self.prestatiemetingresult_set.get(question_id=question_number)
+        return result.answer.gradation.score
 
 
 class PrestatiemetingGradation(models.Model):
@@ -172,3 +169,4 @@ class PrestatiemetingResult(models.Model):
     question = models.ForeignKey(PrestatiemetingQuestion, on_delete=models.CASCADE)
     answer = models.ForeignKey(PrestatiemetingAnswer, on_delete=models.CASCADE)
     explanation = models.TextField(null=True, blank=True)
+

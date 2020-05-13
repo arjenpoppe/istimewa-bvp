@@ -70,7 +70,7 @@
           type: 'pie',
           data: {
             datasets: [{
-              data: {{ combined_vpi.get_last_value_list|safe }},
+              data: {{ data.pop|safe }},
               backgroundColor: [
                 '#4e73df', '#1cc88a', '#36b9cc', '#DF9C55', '#DF95A3'
               ],

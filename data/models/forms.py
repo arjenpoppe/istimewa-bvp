@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from vpi.models import Project
 
 
 class Form(models.Model):

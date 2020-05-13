@@ -3,7 +3,7 @@ from .models.prestatiemeting import PrestatiemetingQuestion, PrestatiemetingAnsw
     PrestatiemetingGradation, PrestatiemetingTheme
 
 from .models.forms import Form, FormField, FormFieldMultipleChoiceAnswer
-
+from .models.project import Project, Opdrachtgever, OpdrachtgeverContactPersoon, Address, ProjectActiviteit, ProjectFase
 
 admin.site.register(Prestatiemeting)
 
@@ -43,6 +43,13 @@ class FormFieldAdmin(admin.ModelAdmin):
 admin.site.register(FormField, FormFieldAdmin)
 admin.site.register(PrestatiemetingGradation)
 admin.site.register(PrestatiemetingTheme)
+
+admin.site.register(Project)
+admin.site.register(ProjectActiviteit)
+admin.site.register(ProjectFase)
+admin.site.register(Opdrachtgever)
+admin.site.register(OpdrachtgeverContactPersoon)
+admin.site.register(Address)
 
 
 

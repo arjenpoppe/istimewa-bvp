@@ -1,5 +1,7 @@
 from django.db import models
-from vpi.models import VPI, Project
+
+from data.models.project import Project
+from vpi.models import VPI
 
 
 class Dashboard(models.Model):

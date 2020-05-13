@@ -11,14 +11,11 @@ from tablib import Dataset
 
 from data.helpers.excel import export_prestatiemeting
 from data.helpers.validator import validate_prestatiemeting_import
-from vpi.models import Project
-from vpi.models import VPIValue
-from vpi.vpis.prestatiemeting import calc_klanttevredenheid
-from vpi.vpis.project import calc_verhouding_all
+from vpi.vpis import calc_verhouding_all
 from .models.forms import Form
 from .models.prestatiemeting import PrestatiemetingTheme, Prestatiemeting, \
     PrestatiemetingConfig, PrestatiemetingResult, PrestatiemetingAnswer
-from .models.project import ProjectActiviteit
+from .models.project import ProjectActiviteit, Project
 from .models.sources import Sap
 from .resources import UltimoResource, SapResource
 
@@ -38,7 +35,7 @@ def upload(request):
                 upload_prestatiemeting(request)
 
             elif request.POST.get('source') == 'ultimo':
-                upload_ultimo(request, UltimoResource())
+                upload_ultimo(request)
 
             elif request.POST.get('source') == 'sap':
                 upload_sap(request)
@@ -87,15 +84,15 @@ def upload_sap(request):
         data.columns[24]: "besteltekst",
     }, inplace=True)
 
-    # resource = SapResource()
-    # dataset = Dataset()
-    # dataset.load(data)
-    # result = resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
-    #
-    # if not result.has_errors():
-    #     resource.import_data(dataset, dry_run=False)  # Actually import now
-    #
-    # save_project_activiteiten(uploaded_project)
+    resource = SapResource()
+    dataset = Dataset()
+    dataset.load(data)
+    result = resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
+
+    if not result.has_errors():
+        resource.import_data(dataset, dry_run=False)  # Actually import now
+
+    save_project_activiteiten(uploaded_project)
 
     calc_verhouding_all(uploaded_project.number)
 
@@ -108,7 +105,8 @@ def save_project_activiteiten(project):
                                                 description=data['objectomschrijving'])
 
 
-def upload_ultimo(request, resource):
+def upload_ultimo(request):
+    resource = UltimoResource()
     dataset = Dataset()
 
     start = time.time()
@@ -128,6 +126,7 @@ def upload_ultimo(request, resource):
 
 
 def upload_prestatiemeting(request):
+
     data = request.FILES['datafile']
     book = xlrd.open_workbook(file_contents=data.read())
     sheet = book.sheet_by_index(0)
@@ -144,8 +143,8 @@ def upload_prestatiemeting(request):
         pm.uploaded_by = request.user
         pm.save()
 
-        val = VPIValue(vpi_id=1, value=calc_klanttevredenheid(pm.id))
-        val.save()
+        # val = VPIValue(vpi_id=1, value=calc_klanttevredenheid(pm.id))
+        # val.save()
     else:
         messages.error(request, error)
         print(messages)

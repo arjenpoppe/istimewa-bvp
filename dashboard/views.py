@@ -4,8 +4,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
 from data.helpers.excel import prestatiemeting_report
-from data.models.prestatiemeting import Prestatiemeting
-from vpi.models import VPI, VPIValue, Project, CombinedVPI
+from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult, PrestatiemetingQuestion
+from data.models.project import Project
 from .models import Dashboard, Report
 
 
@@ -13,15 +13,31 @@ from .models import Dashboard, Report
 @permission_required('perms.view_dashboard', login_url='login')
 def dashboard(request, dashboard_id):
     vpis = get_object_or_404(Dashboard, id=dashboard_id).vpis.all()
-    return render(request, 'dashboard/dashboard.html', {'vpis': vpis})
+    questions = PrestatiemetingQuestion.objects.filter(about=PrestatiemetingQuestion.OPDRACHTNEMER)
+
+    for question in questions:
+        question.get_avg_score()
+
+    context = {
+        'vpis': vpis,
+        'questions': questions
+    }
+
+    return render(request, 'dashboard/dashboard.html', context=context)
 
 
 @login_required
 @permission_required('perms.view_dashboard', login_url='login')
 def project_dashboard(request, project_number):
     project = Project.objects.get(pk=unquote(project_number))
+    data = []
+    for vpi in project.combined_vpis.all():
+        data.append(vpi.get_last_value_list(project.number))
 
-    return render(request, 'dashboard/project_dashboard.html', {'project': project})
+    print(data)
+
+    return render(request, 'dashboard/project_dashboard.html', {'project': project,
+                                                                'data': data})
 
 
 @login_required

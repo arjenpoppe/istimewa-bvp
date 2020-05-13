@@ -1,41 +1,5 @@
-import urllib.parse
-
-from django.contrib.admin.utils import quote
 from django.db import models
-
-# from data.models.prestatiemeting import Prestatiemeting
-
-
-class Address(models.Model):
-    city = models.CharField(max_length=30)
-    postal_code = models.CharField(max_length=10)
-    street = models.CharField(max_length=20)
-    number = models.IntegerField()
-    number_addition = models.CharField(max_length=5, null=True, blank=True)
-
-    def __str__(self):
-        return f'{self.street} {self.number}{self.number_addition if self.number_addition else ""}, {self.postal_code} {self.city}'
-
-
-class Opdrachtgever(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return self.name
-
-
-class OpdrachtgeverContactPersoon(models.Model):
-    firstname = models.CharField(max_length=100)
-    lastname = models.CharField(max_length=100)
-    address = models.OneToOneField(Address, on_delete=models.CASCADE, blank=True, null=True)
-    phone = models.CharField(max_length=15)
-    email = models.CharField(max_length=30)
-    opdrachtgever = models.ForeignKey(Opdrachtgever, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.firstname} {self.lastname}'
+from vpi import vpis
 
 
 class VPI(models.Model):
@@ -43,11 +7,22 @@ class VPI(models.Model):
     CARD = 'CA'
     BAR = 'BC'
     PIE = 'PC'
-    CHOICES = [
+    CHART_CHOICES = [
         (AREA, 'Area chart'),
         (CARD, 'Card'),
         (BAR, 'Bar chart'),
         (PIE, 'Pie chart')
+    ]
+
+    AVG = 'avg'
+    LAST = 'last'
+    FIRST = 'first'
+    SINGLE = 'single'
+    MEASURE_CHOICES = [
+        (AVG, 'Gemiddlede'),
+        (LAST, 'Laatste'),
+        (FIRST, 'Eerste'),
+        (SINGLE, 'Enkele waarde')
     ]
 
     name = models.CharField(max_length=100)
@@ -56,11 +31,39 @@ class VPI(models.Model):
     formula = models.CharField(max_length=200, blank=True, null=True)
     theme = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=20, blank=True, null=True)
-    chart_type = models.CharField(max_length=2, choices=CHOICES)
-    label = models.CharField(max_length=20, default='test')
+    chart_type = models.CharField(max_length=2, choices=CHART_CHOICES)
+    label = models.CharField(max_length=20)
+    function = models.CharField(max_length=30, null=True, blank=True)
+    default_measure = models.CharField(max_length=10, choices=MEASURE_CHOICES)
 
     def __str__(self):
         return f'{self.name}'
+
+    def get_value(self, *args):
+        if self.function:
+            result = getattr(vpis, f'{self.function}_{self.default_measure}')(args)
+            return result
+
+    def get_target(self, project_id=None):
+        return self.vpitarget_set.get(project_id=project_id)
+
+    # def get_target_color(self):
+    #     target = self.get_target()
+    #     upper_limit = target.upper_limit
+    #     lower_limit = target.lower_limit
+    #
+    #     if lower_limit <= self.get_value() <= upper_limit:
+    #         return 'warning'
+    #     elif target.is_better == 'higher':
+    #         if self.get_value() > upper_limit:
+    #             return 'success'
+    #         else:
+    #             return 'danger'
+    #     elif target.is_better == 'lower':
+    #         if self.get_value() < lower_limit:
+    #             return 'success'
+    #         else:
+    #             return 'danger'
 
 
 class CombinedVPI(models.Model):
@@ -68,13 +71,13 @@ class CombinedVPI(models.Model):
     description = models.TextField(blank=True, null=True)
     theme = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=20, blank=True, null=True)
-    chart_type = models.CharField(max_length=2, choices=VPI.CHOICES)
+    chart_type = models.CharField(max_length=2, choices=VPI.CHART_CHOICES)
     vpis = models.ManyToManyField(VPI)
 
-    def get_last_value_list(self):
+    def get_last_value_list(self, *args):
         data = []
         for vpi in self.vpis.all():
-            data.append(vpi.vpivalue_set.get(vpi=vpi).value)
+            data.append(vpi.get_value(*args))
 
         return data
 
@@ -86,29 +89,13 @@ class CombinedVPI(models.Model):
         return labels
 
 
-class Project(models.Model):
-    number = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    opdrachtgever = models.ForeignKey(Opdrachtgever, on_delete=models.CASCADE, null=True)
-    object_amount = models.IntegerField(default=1)
-    vpis = models.ManyToManyField(VPI, blank=True)
-    combined_vpis = models.ManyToManyField(CombinedVPI, blank=True)
+class VPIValue(models.Model):
+    value = models.FloatField()
+    vpi = models.ForeignKey(VPI, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.number}: {self.name}'
-
-    def encode_number(self):
-        return quote(self.number)
-
-
-class ProjectGoal(models.Model):
-    number = models.IntegerField()
-    project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    goal = models.TextField()
-
-    def __str__(self):
-        return f'{self.project.number}:{self.project.name} - Projectdoel {self.number}'
+        return str(self.value)
 
 
 class VPITarget(models.Model):
@@ -118,42 +105,14 @@ class VPITarget(models.Model):
         (LOWER, 'Lower'),
         (HIGHER, 'Higher')
     ]
-    vpi = models.ForeignKey(VPI, on_delete=models.CASCADE)
+    vpi = models.ForeignKey(to='vpi.VPI', on_delete=models.CASCADE)
     lower_limit = models.FloatField()
     upper_limit = models.FloatField()
     is_better = models.CharField(max_length=6, choices=CHOICES)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+    project = models.ForeignKey(to='data.Project', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         if self.project:
             return f'{str(self.project)}'
         else:
             return f'VPI: {str(self.vpi)}'
-
-
-class VPIValue(models.Model):
-    value = models.FloatField()
-    vpi = models.ForeignKey(VPI, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.value)
-
-    def get_target_color(self):
-        target = self.vpi.vpitarget_set.last()
-        upper_limit = target.upper_limit
-        lower_limit = target.lower_limit
-
-        if lower_limit <= self.value <= upper_limit:
-            return 'warning'
-        elif target.is_better == 'higher':
-            if self.value > upper_limit:
-                return 'success'
-            else:
-                return 'danger'
-        elif target.is_better == 'lower':
-            if self.value < lower_limit:
-                return 'success'
-            else:
-                return 'danger'
-

@@ -5,18 +5,17 @@
 
 {% block page_header %}Dashboard{% endblock page_header %}
 {% block content %}
-  <!-- Content Row -->
+      <!-- Content Row -->
     <div class="row">
         {% for vpi in vpis %}
             {% if vpi.chart_type == vpi.CARD %}
-                <!-- Earnings (Monthly) Card Example -->
                 <div class="col-xl-3 col-md-6 mb-4">
-                  <div class="card border-left-{{ vpi.vpivalue_set.last.get_target_color }} shadow h-100 py-2">
+                  <div class="card border-left-{{ vpi.get_target_color }} shadow h-100 py-2">
                     <div class="card-body">
                       <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                           <a href="{% url 'vpi:detail' vpi.id %}" class="text-xs font-weight-bold text-{{ vpi.vpivalue_set.last.get_target_color }} text-uppercase mb-1">{{vpi.name}}</a>
-                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.vpivalue_set.last.value|floatformat:1 }} {{ vpi.measuring_unit }}</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.get_value|floatformat:2 }} {{ vpi.measuring_unit }}</div>
                         </div>
                         <div class="col-auto">
                           <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -27,7 +26,27 @@
                 </div>
             {% endif %}
         {% endfor %}
-      </div>
+    </div>
+
+
+    <div class="card shadow mb-4 col-4">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Thema</th>
+                    <th scope="col">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in questions %}
+                    <tr>
+                        <td scope="row">{{ question.description }}</td>
+                        <td>{{ question.get_avg_score.avg|floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock content %}
 
 {% block scripts %}
