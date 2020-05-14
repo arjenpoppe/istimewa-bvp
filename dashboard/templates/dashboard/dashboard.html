@@ -14,7 +14,7 @@
                     <div class="card-body">
                       <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                          <a href="{% url 'vpi:detail' vpi.id %}" class="text-xs font-weight-bold text-{{ vpi.vpivalue_set.last.get_target_color }} text-uppercase mb-1">{{vpi.name}}</a>
+                          <a href="{% url 'vpi:detail' vpi.id %}" class="text-xs font-weight-bold text-{{ vpi.get_target_color }} text-uppercase mb-1">{{vpi.name}}</a>
                           <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.get_value|floatformat:2 }} {{ vpi.measuring_unit }}</div>
                         </div>
                         <div class="col-auto">
@@ -28,30 +28,63 @@
         {% endfor %}
     </div>
 
-
-    <div class="card shadow mb-4 col-4">
-        <div class="card-header">
-
+    <div class="row">
+        <div class="col-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Subcategorien klanttevredenheid
+                    </h6>
+                </div>
+                <div class="card-body scroll">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Thema</th>
+                                <th scope="col">Weging</th>
+                                <th scope="col">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for question in questions %}
+                                <tr>
+                                    <td scope="row">{{ question.description }}</td>
+                                    <td scope="row">{{ question.weight }}%</td>
+                                    <td>{{ question.get_avg_score.avg|floatformat:1 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th scope="col">Thema</th>
-                        <th scope="col">Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for question in questions %}
-                        <tr>
-                            <td scope="row">{{ question.description }}</td>
-                            <td>{{ question.get_avg_score.avg|floatformat:2 }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <!-- Area Chart -->
+        <div class="col-6">
+          <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary">Historisch verloop</h6>
+                <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                  <div class="dropdown-header">Dropdown Header:</div>
+                  <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+              </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+              <div class="chart-area">
+                <canvas id="myAreaChart"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
-
     </div>
 {% endblock content %}
 

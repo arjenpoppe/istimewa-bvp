@@ -9,3 +9,8 @@
 /*  background-color: #df1b15;*/
 /*  border-color: #df001e;*/
 /*}*/
+
+.scroll {
+    max-height: 360px;
+    overflow-y: auto;
+}

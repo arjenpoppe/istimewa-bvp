@@ -109,6 +109,7 @@ def export_prestatiemeting(prestatiemeting_id):
     for question in questions:
         worksheet.write(meta_data_counter, 0, question.number)
         worksheet.write(meta_data_counter, 1, f'=B{question_rows[meta_data_counter - 1] + 1}')
+        worksheet.write(meta_data_counter, 2, f'=C{question_rows[meta_data_counter - 1] + 1}')
         worksheet.set_row(meta_data_counter, None, None, {'hidden': True})
         meta_data_counter += 1
 

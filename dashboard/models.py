@@ -4,11 +4,20 @@ from data.models.project import Project
 from vpi.models import VPI
 
 
-class Dashboard(models.Model):
+class GeneralDashboard(models.Model):
     name = models.CharField(max_length=20)
     description = models.TextField(null=True, blank=True)
     vpis = models.ManyToManyField(VPI)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+
+
+class ProjectDashboard(GeneralDashboard):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def get_data(self):
+        data = []
+        for vpi in self.project.vpis.all():
+            vpi.get_value(self.project.number)
+
 
 
 class Report(models.Model):

@@ -5,6 +5,7 @@ import xlrd
 import pandas as pd
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from tablib import Dataset
@@ -115,7 +116,12 @@ def upload_ultimo(request):
     print('Loading the dataset took:', time.time() - start, 'seconds.')
 
     dry_run_start = time.time()
-    result = resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
+    try:
+        result = resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
+    except ValidationError as err:
+        messages.error(request, f'Er is een validatie error opgetreden: {err}')
+        return redirect('data:upload')
+
     print('Dry run took:', time.time() - dry_run_start, 'seconds.')
 
     print('Has errors:', result.has_errors())
@@ -142,6 +148,8 @@ def upload_prestatiemeting(request):
         pm.save_excel_results(sheet)
         pm.filled_og = datetime.now()
         pm.uploaded_by = request.user
+        print(data)
+        pm.excel_file = data
         pm.save()
 
         # val = VPIValue(vpi_id=1, value=calc_klanttevredenheid(pm.id))
@@ -233,13 +241,17 @@ def prestatiemeting(request, prestatiemeting_id):
         return redirect('data:forms')
 
     if request.POST:
-        PrestatiemetingResult.objects.filter(prestatiemeting_id=prestatiemeting_id).delete()
+        PrestatiemetingResult.objects.filter(prestatiemeting_id=prestatiemeting_id, question__about='OG').delete()
         print(request.POST)
         for question in questions:
             print(question)
             answer_id = request.POST.get(f'question_{question.number}')
+            explanation = None
+            if request.POST.get(f'explanation_{question.number}') != "":
+                explanation = request.POST.get(f'explanation_{question.number}')
             pmr = PrestatiemetingResult(prestatiemeting_id=prestatiemeting_id, question=question,
-                                        answer=PrestatiemetingAnswer.objects.get(id=answer_id))
+                                        answer=PrestatiemetingAnswer.objects.get(id=answer_id),
+                                        explanation=explanation)
             pmr.save()
 
         pm.filled_on = datetime.now()
@@ -277,13 +289,4 @@ def projects_view(request):
     projects = Project.objects.all()
     return render(request, 'data/projects.html', {'projects': projects})
 
-
-def get_target_color(vpi_id, vpi_value, project_id=None):
-    vpi_target = VPI.objects.get(pk=vpi_id).get_target(project_id)
-
-    color = 'info'
-
-
-
-    return color
 

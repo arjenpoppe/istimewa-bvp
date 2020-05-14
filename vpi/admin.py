@@ -14,6 +14,7 @@ class VPIAdmin(admin.ModelAdmin):
 
 
 admin.site.register(VPI, VPIAdmin)
+
 admin.site.register(CombinedVPI)
 admin.site.register(VPITarget)
 

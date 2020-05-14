@@ -36,6 +36,7 @@ class PrestatiemetingQuestion(models.Model):
         return f'Question number: {self.number}'
 
     def get_avg_score(self):
+        print(self.number, PrestatiemetingResult.objects.filter(question=self).values_list('answer__gradation__score'))
         return PrestatiemetingResult.objects.filter(question=self).aggregate(avg=Avg('answer__gradation__score'))
 
 
@@ -46,6 +47,7 @@ class Prestatiemeting(models.Model):
     filled_og = models.DateTimeField(null=True)
     submitted_by = models.ForeignKey(User, related_name='%(class)s_submitted', on_delete=models.CASCADE, null=True)
     uploaded_by = models.ForeignKey(User, related_name='%(class)s_uploaded', on_delete=models.CASCADE, null=True)
+    excel_file = models.FileField(upload_to='prestatiemetingen/', null=True)
 
     def __str__(self):
         return f'Project: {self.project}'
@@ -83,13 +85,19 @@ class Prestatiemeting(models.Model):
 
     def save_excel_results(self, sheet):
         question_amount = int(sheet.cell_value(0, 1).split('=')[1])
+        PrestatiemetingResult.objects.filter(prestatiemeting=self,
+                                             question__about=PrestatiemetingQuestion.OPDRACHTNEMER).delete()
 
         for i in range(question_amount):
             question_number = int(sheet.cell_value(i + 1, 0))
             answer_gradation = sheet.cell_value(i + 1, 1).split('.', 1)[0]
+            explanation = sheet.cell_value(i + 1, 2)
+            if explanation == 0.0:
+                explanation = None
             question = PrestatiemetingQuestion.objects.get(pk=question_number)
             answer = question.prestatiemetinganswer_set.get(gradation__pk=answer_gradation)
-            pmr = PrestatiemetingResult(prestatiemeting_id=self.id, question=question, answer=answer)
+            pmr = PrestatiemetingResult(prestatiemeting_id=self.id, question=question, answer=answer,
+                                        explanation=explanation)
             pmr.save()
 
     def is_submitted_by_og(self):
