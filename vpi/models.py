@@ -47,23 +47,23 @@ class VPI(models.Model):
     def get_target(self, project_id=None):
         return self.vpitarget_set.get(project_id=project_id)
 
-    # def get_target_color(self):
-    #     target = self.get_target()
-    #     upper_limit = target.upper_limit
-    #     lower_limit = target.lower_limit
-    #
-    #     if lower_limit <= self.get_value() <= upper_limit:
-    #         return 'warning'
-    #     elif target.is_better == 'higher':
-    #         if self.get_value() > upper_limit:
-    #             return 'success'
-    #         else:
-    #             return 'danger'
-    #     elif target.is_better == 'lower':
-    #         if self.get_value() < lower_limit:
-    #             return 'success'
-    #         else:
-    #             return 'danger'
+    def get_target_color(self, project_id=None):
+        target = self.get_target()
+        upper_limit = target.upper_limit
+        lower_limit = target.lower_limit
+
+        if lower_limit <= self.get_value() <= upper_limit:
+            return 'warning'
+        elif target.is_better == 'higher':
+            if self.get_value() > upper_limit:
+                return 'success'
+            else:
+                return 'danger'
+        elif target.is_better == 'lower':
+            if self.get_value() < lower_limit:
+                return 'success'
+            else:
+                return 'danger'
 
 
 class CombinedVPI(models.Model):

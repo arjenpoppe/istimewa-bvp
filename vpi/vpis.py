@@ -22,23 +22,40 @@ def klanttevredenheid_avg(project_id):
 
 
 def aanrijtijd_avg(project_id):
-    # TODO hier verder
-    if project_id:
-        print('True')
+    data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__isnull=False,
+                                 aankomsttijd__isnull=False)
 
-    data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__isnull=False, aankomsttijd__isnull=False)
+    if project_id:
+        pass
 
     total = 0
 
     for row in data:
         melddatum = datetime.strptime(row.melddatum, "%Y-%m-%d %H:%M:%S")
         aankomsttijd = datetime.strptime(row.aankomsttijd, "%Y-%m-%d %H:%M:%S")
-
         aanrijtijd = aankomsttijd - melddatum
-
         total += aanrijtijd.total_seconds()
 
-    print(total / len(data))
+    return (total / 60) / len(data)
+
+
+def functioneel_hersteltijd_avg(project_id):
+    data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__isnull=False,
+                                 functioneel_herstel_tijd__isnull=False)
+
+    if project_id:
+        pass
+
+    total = 0
+
+    for row in data:
+        melddatum = datetime.strptime(row.melddatum, "%Y-%m-%d %H:%M:%S")
+        hersteltijd = datetime.strptime(row.functioneel_herstel_tijd, "%Y-%m-%d %H:%M:%S")
+        aanrijtijd = hersteltijd - melddatum
+        total += aanrijtijd.total_seconds()
+
+    return (total / 60) / len(data)
+
 
 
 def prestatiemeting_sub_theme(question_id):

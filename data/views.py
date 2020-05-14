@@ -11,6 +11,7 @@ from tablib import Dataset
 
 from data.helpers.excel import export_prestatiemeting
 from data.helpers.validator import validate_prestatiemeting_import
+from vpi.models import VPI
 from vpi.vpis import calc_verhouding_all
 from .models.forms import Form
 from .models.prestatiemeting import PrestatiemetingTheme, Prestatiemeting, \
@@ -275,4 +276,14 @@ def export_excel(request, prestatiemeting_id):
 def projects_view(request):
     projects = Project.objects.all()
     return render(request, 'data/projects.html', {'projects': projects})
+
+
+def get_target_color(vpi_id, vpi_value, project_id=None):
+    vpi_target = VPI.objects.get(pk=vpi_id).get_target(project_id)
+
+    color = 'info'
+
+
+
+    return color
 

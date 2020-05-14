@@ -32,7 +32,7 @@
               <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                   <div class="text-xs font-weight-bold text-{{ vpi.vpivalue_set.last.get_target_color }} text-uppercase mb-1">{{ vpi.name}}</div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.vpivalue_set.last.value|floatformat:1 }}</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.get_value|floatformat:1 }} {{ vpi.measuring_unit }}</div>
                 </div>
                 <div class="col-auto">
                   <i class="fas fa-calendar fa-2x text-gray-300"></i>
