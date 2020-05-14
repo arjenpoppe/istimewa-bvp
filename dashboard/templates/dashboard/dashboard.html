@@ -30,22 +30,28 @@
 
 
     <div class="card shadow mb-4 col-4">
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th scope="col">Thema</th>
-                    <th scope="col">Score</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for question in questions %}
+        <div class="card-header">
+
+        </div>
+        <div class="card-body">
+            <table class="table table-sm">
+                <thead>
                     <tr>
-                        <td scope="row">{{ question.description }}</td>
-                        <td>{{ question.get_avg_score.avg|floatformat:2 }}</td>
+                        <th scope="col">Thema</th>
+                        <th scope="col">Score</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for question in questions %}
+                        <tr>
+                            <td scope="row">{{ question.description }}</td>
+                            <td>{{ question.get_avg_score.avg|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     </div>
 {% endblock content %}
 
