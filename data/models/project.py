@@ -41,7 +41,6 @@ class Project(models.Model):
     opdrachtgever = models.ForeignKey(Opdrachtgever, on_delete=models.CASCADE, null=True)
     object_amount = models.IntegerField(default=1)
     vpis = models.ManyToManyField(to='vpi.VPI', blank=True)
-    combined_vpis = models.ManyToManyField(to='vpi.CombinedVPI', blank=True)
 
     def __str__(self):
         return f'{self.number}: {self.name}'

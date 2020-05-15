@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import VPI, VPIValue, CombinedVPI, VPITarget
+from .models import VPI, VPIValue, VPITarget
 
 
 class ValueInline(admin.TabularInline):
@@ -15,6 +15,5 @@ class VPIAdmin(admin.ModelAdmin):
 
 admin.site.register(VPI, VPIAdmin)
 
-admin.site.register(CombinedVPI)
 admin.site.register(VPITarget)
 

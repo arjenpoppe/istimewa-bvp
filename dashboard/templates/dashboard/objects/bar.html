@@ -1,0 +1,103 @@
+<div class="col-6">
+  <div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">{{ object.vpi.name }}</h6>
+        <div class="dropdown no-arrow">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-header">Dropdown Header:</div>
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </div>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      <div class="chart-area">
+        <canvas id="vpi_{{ object.vpi.id }}"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ object.get_vpi_data|json_script:object.vpi.id }}
+<script>
+    const data = JSON.parse(document.getElementById('{{ object.vpi.id }}').textContent);
+
+    var config = {
+        type: 'bar',
+        data: {
+            labels: data['labels'],
+            datasets: [{
+                label: "Aantal storingen",
+                backgroundColor: "#4e73df",
+                hoverBackgroundColor: "#2e59d9",
+                borderColor: "#4e73df",
+                trendlineLinear: {
+                    style: "rgb(255,36,36)",
+                    lineStyle: "dotted",
+                    width: 2
+                },
+                data: data['data'],
+
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 25,
+                bottom: 0
+              }
+            },
+            scales: {
+              xAxes: [{
+                time: {
+                  unit: 'month'
+                },
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                maxBarThickness: 25,
+              }],
+              yAxes: [{
+                ticks: {
+                  maxTicksLimit: 5,
+                  padding: 10,
+                },
+                gridLines: {
+                  color: "rgb(234, 236, 244)",
+                  zeroLineColor: "rgb(234, 236, 244)",
+                  drawBorder: false,
+                  borderDash: [2],
+                  zeroLineBorderDash: [2]
+                }
+              }],
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                callbacks: {
+                label: function(tooltipItem) {
+                    console.log(tooltipItem);
+                    return tooltipItem.yLabel;
+                }
+              }
+            }
+        }
+    };
+
+    window.onload = function() {
+        var context = document.getElementById('vpi_{{ object.vpi.id }}').getContext('2d');
+        window.myBarChart = new Chart(context, config);
+    };
+</script>

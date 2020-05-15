@@ -1,17 +1,35 @@
+from django.db.models.functions import TruncMonth
+
 from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult, PrestatiemetingQuestion
 
-from django.db.models import Sum
-from datetime import datetime
+from django.db.models import Sum, Count, F
+import json
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from data.models.project import ProjectActiviteit, ProjectFase, Project
 from data.models.sources import Sap, Ultimo
 
 
-# these function names have to be written like <vpi.method>_<vpi.measure>
+"""
+These functions get called from the VPI model. The function signatures are saved in the model and called by get_value().
+Functions that are meant to provide data for a ChartJs object return a dictionary containing label and data. Other 
+functions return float values.
+"""
 
 
-def klanttevredenheid_avg(project_id):
+def klanttevredenheid(project_id):
+    """
+    Calculate the average klanttevredenheid.
+    @param project_id: optional project to get project specific klanttevredenheid
+    @return: avarege klanttevredenheid score in float
+    """
     finished_prestatiemetingen = Prestatiemeting.objects.filter(filled_on__isnull=False, filled_og__isnull=False)
+    print(project_id)
+    if project_id:
+        finished_prestatiemetingen = finished_prestatiemetingen.filter(project_id=project_id)
+
+    print(len(finished_prestatiemetingen))
 
     total = 0
 
@@ -21,7 +39,9 @@ def klanttevredenheid_avg(project_id):
     return total / len(finished_prestatiemetingen)
 
 
-def aanrijtijd_avg(project_id):
+
+
+def aanrijtijd(project_id):
     data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__isnull=False,
                                  aankomsttijd__isnull=False)
 
@@ -31,31 +51,47 @@ def aanrijtijd_avg(project_id):
     total = 0
 
     for row in data:
-        melddatum = datetime.strptime(row.melddatum, "%Y-%m-%d %H:%M:%S")
-        aankomsttijd = datetime.strptime(row.aankomsttijd, "%Y-%m-%d %H:%M:%S")
-        aanrijtijd = aankomsttijd - melddatum
+        aanrijtijd = row.aankomsttijd - row.melddatum
         total += aanrijtijd.total_seconds()
 
     return (total / 60) / len(data)
 
 
-def functioneel_hersteltijd_avg(project_id):
+def functioneel_hersteltijd(project_id):
     data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__isnull=False,
                                  functioneel_herstel_tijd__isnull=False)
-
-    if project_id:
-        pass
 
     total = 0
 
     for row in data:
-        melddatum = datetime.strptime(row.melddatum, "%Y-%m-%d %H:%M:%S")
-        hersteltijd = datetime.strptime(row.functioneel_herstel_tijd, "%Y-%m-%d %H:%M:%S")
-        aanrijtijd = hersteltijd - melddatum
+        aanrijtijd = row.functioneel_herstel_tijd - row.melddatum
         total += aanrijtijd.total_seconds()
 
     return (total / 60) / len(data)
 
+
+def aantal_storingen_monthly(project_id):
+    """
+    returns
+    @param project_id:
+    @return:
+    """
+    past_year = datetime.now() - relativedelta(years=1)
+    data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__gt=past_year).annotate(month=TruncMonth('melddatum')).values('month')\
+        .annotate(total=Count('code')).order_by('month')
+
+    months = []
+    for month in data.values_list('month', flat=True):
+        months.append(month.strftime('%B'))
+
+    data = list(data.values_list('total', flat=True))
+
+    data = {
+        'data': data,
+        'labels': months
+    }
+
+    return data
 
 
 def prestatiemeting_sub_theme(question_id):
@@ -71,62 +107,31 @@ def prestatiemeting_sub_theme(question_id):
     return total / len(finished_prestatiemetingen)
 
 
-def calc_verhouding_project(project_number, project_fase):
-    print(project_number)
-    project_number = project_number[0]
-    print(project_number)
-    project = Project.objects.get(pk=project_number)
+def verhouding_projectfasen(project_number):
+    """
+    Calculates the percentage of hours worked on ech project fase
+    @param project_number: project_number
+    @return: dictionary containing data and labels
+    """
+    hours = []
+    labels = []
 
-    activities = ProjectActiviteit.objects.filter(project=project,
-                                                  projectfase__fase=project_fase).values_list('code', flat=True)
+    projectfases = ProjectFase.objects.all()
+    for projectfase in projectfases:
+        project_activities = projectfase.activities.filter(project_id=project_number).values_list('code', flat=True)
+        sap_data = Sap.objects.filter(object__in=project_activities, he='H').aggregate(total=Sum('hoeveelheid_totaal'))
 
-    sap_data = Sap.objects.values('object', 'objectomschrijving') \
-        .filter(object__contains=project_number, he='H') \
-        .order_by('object') \
-        .annotate(total=Sum('hoeveelheid_totaal'))
+        hours.append(sap_data['total'])
+        labels.append(projectfase.fase)
 
-    hours = 0
+    total_hours = sum(hours)
 
-    for row in sap_data:
-        if row['object'] in activities:
-            hours += row['total']
+    data = [percentage / total_hours * 100 for percentage in hours]
 
-    total_hours = sap_data.aggregate(Sum('total'))
-    percentage = hours / total_hours['total__sum'] * 100
+    context = {
+        'data': data,
+        'labels': labels
+    }
 
-    return percentage
-
-
-def verhouding_project_inrichting_single(project_number):
-    percentage = calc_verhouding_project(project_number, ProjectFase.INRICHTING)
-    return percentage
-
-
-def verhouding_project_ontwerp_single(project_number):
-    percentage = calc_verhouding_project(project_number, ProjectFase.ONTWERP)
-    return percentage
-
-
-def verhouding_project_uitvoer_single(project_number):
-    percentage = calc_verhouding_project(project_number, ProjectFase.UITVOER)
-    return percentage
-
-
-def verhouding_project_oplevering_single(project_number):
-    percentage = calc_verhouding_project(project_number, ProjectFase.OPLEVERING)
-    return percentage
-
-
-def verhouding_project_overig_single(project_number):
-    percentage = calc_verhouding_project(project_number, ProjectFase.OVERIG)
-    return percentage
-
-
-def calc_verhouding_all(project_number):
-    # verhouding_project_inrichting(project_number)
-    # verhouding_project_ontwerp(project_number)
-    # verhouding_project_uitvoer(project_number)
-    # verhouding_project_oplevering(project_number)
-    # verhouding_project_overig(project_number)
-    pass
+    return context
 

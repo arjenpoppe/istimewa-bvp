@@ -34,20 +34,40 @@ class VPI(models.Model):
     chart_type = models.CharField(max_length=2, choices=CHART_CHOICES)
     label = models.CharField(max_length=20)
     function = models.CharField(max_length=30, null=True, blank=True)
-    default_measure = models.CharField(max_length=10, choices=MEASURE_CHOICES)
+    has_subset = models.BooleanField(default=False)
+    value = None
 
     def __str__(self):
         return f'{self.name}'
 
-    def get_value(self, *args):
+    def get_value(self, project_number=None):
+        """
+        generic function which calls the function that returns the values for this specific vpi
+        @param project_number: (optional) project number
+        @return: data in json format
+        """
+        # TODO fix caching; problem caused by get_vpi_target
         if self.function:
-            result = getattr(vpis, f'{self.function}_{self.default_measure}')(args)
-            return result
+            if not self.value:
+                self.value = getattr(vpis, f'{self.function}')(project_number)
+                return self.value
+            else:
+                return self.value
 
     def get_target(self, project_id=None):
+        """
+        Returns the targat which is set for a vpi in de database
+        @param project_id: (optional) get target for specific project
+        @return: VPITarget object
+        """
         return self.vpitarget_set.get(project_id=project_id)
 
     def get_target_color(self, project_id=None):
+        """
+        Returns the target related color (green/yellow/res)
+        @param project_id: (optional) get target color for specific project
+        @return: color as string
+        """
         target = self.get_target()
         upper_limit = target.upper_limit
         lower_limit = target.lower_limit
@@ -66,27 +86,10 @@ class VPI(models.Model):
                 return 'danger'
 
 
-class CombinedVPI(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    theme = models.CharField(max_length=100, blank=True, null=True)
-    type = models.CharField(max_length=20, blank=True, null=True)
-    chart_type = models.CharField(max_length=2, choices=VPI.CHART_CHOICES)
-    vpis = models.ManyToManyField(VPI)
-
-    def get_last_value_list(self, *args):
-        data = []
-        for vpi in self.vpis.all():
-            data.append(vpi.get_value(*args))
-
-        return data
-
-    def get_labels_list(self):
-        labels = []
-        for vpi in self.vpis.all():
-            labels.append(vpi.label)
-
-        return labels
+class VPIDataContainer:
+    def __init__(self, vpi, data):
+        self.vpi = vpi
+        self.data = data
 
 
 class VPIValue(models.Model):

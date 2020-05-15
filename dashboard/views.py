@@ -6,21 +6,23 @@ from django.http import HttpResponse
 from data.helpers.excel import prestatiemeting_report
 from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult, PrestatiemetingQuestion
 from data.models.project import Project
-from .models import GeneralDashboard, Report, ProjectDashboard
+from vpi.models import VPI
+from .models import Report, Dashboard
 
 
 @login_required
 @permission_required('perms.view_dashboard', login_url='login')
 def general_dashboard(request, dashboard_id):
-    vpis = get_object_or_404(GeneralDashboard, id=dashboard_id).vpis.all()
+    dashboard = get_object_or_404(Dashboard, id=dashboard_id)
     questions = PrestatiemetingQuestion.objects.filter(about=PrestatiemetingQuestion.OPDRACHTNEMER)
+    dashboard.get_ordered_objects_by_row()
 
     for question in questions:
         question.get_avg_score()
 
     context = {
-        'vpis': vpis,
-        'questions': questions
+        'questions': questions,
+        'dashboard': dashboard,
     }
 
     return render(request, 'dashboard/dashboard.html', context=context)
@@ -29,7 +31,8 @@ def general_dashboard(request, dashboard_id):
 @login_required
 @permission_required('perms.view_dashboard', login_url='login')
 def project_dashboard(request, project_number):
-    dashboard = ProjectDashboard(project_id=unquote(project_number))
+    project_number = unquote(project_number)
+    dashboard = Dashboard.objects.get(project_id=project_number)
 
     return render(request, 'dashboard/project_dashboard.html', {'dashboard': dashboard})
 

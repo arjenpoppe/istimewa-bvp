@@ -6,6 +6,7 @@ from .models.sources import Ultimo, Sap
 
 
 class UltimoResource(resources.ModelResource):
+    id = Field(column_name='id')
     code = Field(attribute='code', column_name='Code')
     code_contract = Field(attribute='code_contract', column_name='Code contract')
     voortgangsstatus = Field(attribute='voortgangsstatus', column_name='Voortgangsstatus')
@@ -75,7 +76,6 @@ class UltimoResource(resources.ModelResource):
     code_installatie3 = Field(attribute='code_installatie3', column_name='Code installatie')
     gevalideerd_door_rws = Field(attribute='gevalideerd_door_rws', column_name='Gevalideerd door RWS')
     ontvangen_rws = Field(attribute='ontvangen_rws', column_name='Ontvangen RWS')
-
 
     class Meta:
         model = Ultimo

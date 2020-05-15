@@ -13,7 +13,6 @@ from tablib import Dataset
 from data.helpers.excel import export_prestatiemeting
 from data.helpers.validator import validate_prestatiemeting_import
 from vpi.models import VPI
-from vpi.vpis import calc_verhouding_all
 from .models.forms import Form
 from .models.prestatiemeting import PrestatiemetingTheme, Prestatiemeting, \
     PrestatiemetingConfig, PrestatiemetingResult, PrestatiemetingAnswer
@@ -96,8 +95,6 @@ def upload_sap(request):
 
     save_project_activiteiten(uploaded_project)
 
-    calc_verhouding_all(uploaded_project.number)
-
 
 def save_project_activiteiten(project):
     unique_activiteit_codes = Sap.objects.order_by('object').values('object', 'objectomschrijving').distinct()
@@ -108,28 +105,24 @@ def save_project_activiteiten(project):
 
 
 def upload_ultimo(request):
+    """
+    Handle ultimo excel sheet.
+    @param request:
+    @return:
+    """
     resource = UltimoResource()
     dataset = Dataset()
 
-    start = time.time()
     dataset.load(request.FILES['datafile'].read())
-    print('Loading the dataset took:', time.time() - start, 'seconds.')
 
-    dry_run_start = time.time()
     try:
-        result = resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
+        result = resource.import_data(dataset, dry_run=True)  # Test the data import
     except ValidationError as err:
         messages.error(request, f'Er is een validatie error opgetreden: {err}')
         return redirect('data:upload')
 
-    print('Dry run took:', time.time() - dry_run_start, 'seconds.')
-
-    print('Has errors:', result.has_errors())
-
     if not result.has_errors():
-        start_import = time.time()
         resource.import_data(dataset, dry_run=False)  # Actually import now
-        print('Import took:', time.time() - start_import, 'seconds.')
 
 
 def upload_prestatiemeting(request):

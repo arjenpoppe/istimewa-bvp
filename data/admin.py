@@ -1,9 +1,12 @@
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+
 from .models.prestatiemeting import PrestatiemetingQuestion, PrestatiemetingAnswer, Prestatiemeting, \
     PrestatiemetingGradation, PrestatiemetingTheme
 
 from .models.forms import Form, FormField, FormFieldMultipleChoiceAnswer
 from .models.project import Project, Opdrachtgever, OpdrachtgeverContactPersoon, Address, ProjectActiviteit, ProjectFase
+from .models.sources import Ultimo
 
 admin.site.register(Prestatiemeting)
 
@@ -38,6 +41,13 @@ class FormFieldMultipleChoiceAnswerInline(admin.TabularInline):
 
 class FormFieldAdmin(admin.ModelAdmin):
     inlines = [FormFieldMultipleChoiceAnswerInline]
+
+
+class UltimoAdmin(ImportExportModelAdmin):
+    resource_class = Ultimo
+    
+
+admin.site.register(Ultimo, UltimoAdmin)
 
 
 admin.site.register(FormField, FormFieldAdmin)
