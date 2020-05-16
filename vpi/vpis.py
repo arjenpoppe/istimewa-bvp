@@ -2,7 +2,7 @@ from django.db.models.functions import TruncMonth
 
 from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult, PrestatiemetingQuestion
 
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Avg
 import json
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 from data.models.project import ProjectActiviteit, ProjectFase, Project
 from data.models.sources import Sap, Ultimo
 
+import random
 
 """
 These functions get called from the VPI model. The function signatures are saved in the model and called by get_value().
@@ -18,18 +19,19 @@ functions return float values.
 """
 
 
-def klanttevredenheid(project_id):
+def klanttevredenheid(project):
     """
     Calculate the average klanttevredenheid.
     @param project_id: optional project to get project specific klanttevredenheid
     @return: avarege klanttevredenheid score in float
     """
     finished_prestatiemetingen = Prestatiemeting.objects.filter(filled_on__isnull=False, filled_og__isnull=False)
-    print(project_id)
-    if project_id:
-        finished_prestatiemetingen = finished_prestatiemetingen.filter(project_id=project_id)
+    if project:
+        finished_prestatiemetingen = finished_prestatiemetingen.filter(project=project)
+        print(finished_prestatiemetingen)
 
-    print(len(finished_prestatiemetingen))
+    if len(finished_prestatiemetingen) == 0:
+        return None
 
     total = 0
 
@@ -39,14 +41,19 @@ def klanttevredenheid(project_id):
     return total / len(finished_prestatiemetingen)
 
 
-
-
-def aanrijtijd(project_id):
+def aanrijtijd(project):
+    """
+    Returns average aanrijtijd
+    @param project: (optional) project object to execute this function for specific projects
+    @return: Average aanrijtijd in minutes
+    """
     data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__isnull=False,
                                  aankomsttijd__isnull=False)
+    if project:
+        data = data.filter(code__contains=project.number)
 
-    if project_id:
-        pass
+    if len(data) is None:
+        return None
 
     total = 0
 
@@ -57,9 +64,20 @@ def aanrijtijd(project_id):
     return (total / 60) / len(data)
 
 
-def functioneel_hersteltijd(project_id):
+def functioneel_hersteltijd(project):
+    """
+    Returns average functiehersteltijd
+    @param project: (optional) project object to execute this function for specific projects
+    @return: Average hersteltijd in minutes
+    """
     data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__isnull=False,
                                  functioneel_herstel_tijd__isnull=False)
+
+    if project:
+        data = data.filter(code__contains=project.number)
+
+    if len(data) is None:
+        return None
 
     total = 0
 
@@ -70,15 +88,21 @@ def functioneel_hersteltijd(project_id):
     return (total / 60) / len(data)
 
 
-def aantal_storingen_monthly(project_id):
+def aantal_storingen_monthly(project):
     """
-    returns
-    @param project_id:
-    @return:
+    Returns aantal storingen per month
+    @param project: (optional) project object to execute this function for specific projects
+    @return: Dictionary containing data and labels. Returns None id no data is available
     """
     past_year = datetime.now() - relativedelta(years=1)
-    data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__gt=past_year).annotate(month=TruncMonth('melddatum')).values('month')\
-        .annotate(total=Count('code')).order_by('month')
+    data = Ultimo.objects.filter(omschrijving_jobsoort='Correctief Onderhoud', melddatum__gt=past_year)
+    if project:
+        data = data.filter(code__contains=project.number)
+
+    if len(data) is None:
+        return None
+
+    data = data.annotate(month=TruncMonth('melddatum')).values('month').annotate(total=Count('code')).order_by('month')
 
     months = []
     for month in data.values_list('month', flat=True):
@@ -94,23 +118,41 @@ def aantal_storingen_monthly(project_id):
     return data
 
 
-def prestatiemeting_sub_theme(question_id):
-    question_id = 1
-    finished_prestatiemetingen = Prestatiemeting.objects.filter(filled_on__isnull=False, filled_og__isnull=False,
-                                                                prestatiemetingconfig__question__exact=question_id)
+def prestatiemeting_opbouw(project):
+    """
+    Returns the sub themes and their scores of prestatiemetingen
+    @param project:
+    @return:
+    """
+    prestatiemeting_results = PrestatiemetingResult.objects.filter(question__about=PrestatiemetingQuestion.OPDRACHTNEMER)
+    questions = PrestatiemetingQuestion.objects.filter(number__in=prestatiemeting_results.values_list('question', flat=True).distinct())
 
-    total = 0
+    if project:
+        prestatiemeting_results = prestatiemeting_results.filter(prestatiemeting__project_id=project.number)
 
-    for prestatiemeting in finished_prestatiemetingen:
-        total += prestatiemeting.get_individual_score(question_id)
+    if len(prestatiemeting_results) is None:
+        return None
 
-    return total / len(finished_prestatiemetingen)
+    rows = []
+
+    for question in questions:
+        theme = question.description
+        weight = question.weight
+        score = prestatiemeting_results.filter(question=question).aggregate(avg=Avg('answer__gradation__score'))
+        rows.append([theme, f'{weight}%', score['avg']])
+
+    data = {
+        'headers': ['Thema', 'Weging', 'Score'],
+        'rows': rows
+    }
+
+    return data
 
 
-def verhouding_projectfasen(project_number):
+def verhouding_projectfasen(project):
     """
     Calculates the percentage of hours worked on ech project fase
-    @param project_number: project_number
+    @param project: (optional) project object to execute this function for specific projects
     @return: dictionary containing data and labels
     """
     hours = []
@@ -118,20 +160,23 @@ def verhouding_projectfasen(project_number):
 
     projectfases = ProjectFase.objects.all()
     for projectfase in projectfases:
-        project_activities = projectfase.activities.filter(project_id=project_number).values_list('code', flat=True)
-        sap_data = Sap.objects.filter(object__in=project_activities, he='H').aggregate(total=Sum('hoeveelheid_totaal'))
+        project_activities = projectfase.activities.filter(project=project).values_list('code', flat=True)
+        sap_data = Sap.objects.filter(object__in=project_activities, he='H').aggregate(
+            total=Sum(F('hoeveelheid_totaal')))
 
-        hours.append(sap_data['total'])
-        labels.append(projectfase.fase)
+        hours.append(sap_data['total']) if sap_data['total'] else hours.append(0)
+        labels.append(projectfase.get_fase_display())
 
-    total_hours = sum(hours)
+    if not hours == [0, 0, 0, 0, 0]:
+        total_hours = sum(hours)
+    else:
+        return None
 
     data = [percentage / total_hours * 100 for percentage in hours]
 
     context = {
         'data': data,
-        'labels': labels
+        'labels': labels,
     }
 
     return context
-

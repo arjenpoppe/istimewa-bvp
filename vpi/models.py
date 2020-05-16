@@ -35,61 +35,32 @@ class VPI(models.Model):
     label = models.CharField(max_length=20)
     function = models.CharField(max_length=30, null=True, blank=True)
     has_subset = models.BooleanField(default=False)
-    value = None
+    decimal_amount = models.IntegerField(default=2)
 
     def __str__(self):
         return f'{self.name}'
 
-    def get_value(self, project_number=None):
+    def get_value(self, project=None):
         """
-        generic function which calls the function that returns the values for this specific vpi
-        @param project_number: (optional) project number
-        @return: data in json format
+        Generic function which calls the function that returns the values for this specific vpi. Returns cached value
+        if available.
+        @param project: (optional) project object
+        @return: data can be dictionary or float
         """
-        # TODO fix caching; problem caused by get_vpi_target
-        if self.function:
-            if not self.value:
-                self.value = getattr(vpis, f'{self.function}')(project_number)
-                return self.value
-            else:
-                return self.value
+        return getattr(vpis, f'{self.function}')(project)
 
-    def get_target(self, project_id=None):
+    def get_target(self, project=None):
         """
         Returns the targat which is set for a vpi in de database
-        @param project_id: (optional) get target for specific project
+        @param project: (optional) get target for specific project
         @return: VPITarget object
         """
-        return self.vpitarget_set.get(project_id=project_id)
-
-    def get_target_color(self, project_id=None):
-        """
-        Returns the target related color (green/yellow/res)
-        @param project_id: (optional) get target color for specific project
-        @return: color as string
-        """
-        target = self.get_target()
-        upper_limit = target.upper_limit
-        lower_limit = target.lower_limit
-
-        if lower_limit <= self.get_value() <= upper_limit:
-            return 'warning'
-        elif target.is_better == 'higher':
-            if self.get_value() > upper_limit:
-                return 'success'
-            else:
-                return 'danger'
-        elif target.is_better == 'lower':
-            if self.get_value() < lower_limit:
-                return 'success'
-            else:
-                return 'danger'
-
-
-class VPIDataContainer:
-    def __init__(self, vpi, data):
-        self.vpi = vpi
-        self.data = data
+        try:
+            return self.vpitarget_set.get(project=project)
+        except VPITarget.DoesNotExist:
+            return self.vpitarget_set.get()
+        except VPITarget.DoesNotExist:
+            return None
 
 
 class VPIValue(models.Model):

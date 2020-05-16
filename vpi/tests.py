@@ -10,3 +10,8 @@ class TestCombinedVPI(TestCase):
 
     def test_get_labels_list(self):
         self.fail()
+
+
+class Test(TestCase):
+    def test_functioneel_hersteltijd(self):
+        self.fail()

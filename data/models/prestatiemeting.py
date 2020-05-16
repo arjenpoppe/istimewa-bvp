@@ -36,7 +36,6 @@ class PrestatiemetingQuestion(models.Model):
         return f'Question number: {self.number}'
 
     def get_avg_score(self):
-        print(self.number, PrestatiemetingResult.objects.filter(question=self).values_list('answer__gradation__score'))
         return PrestatiemetingResult.objects.filter(question=self).aggregate(avg=Avg('answer__gradation__score'))
 
 

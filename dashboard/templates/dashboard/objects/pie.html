@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="col-{{ object.col_width }}">
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -17,69 +19,56 @@
     </div>
       <!-- Card Body -->
     <div class="card-body">
-      <div class="chart-pie pt-4 pb-2">
-        <canvas id="vpi_{{ object.vpi.id }}"></canvas>
-      </div>
-      <div class="mt-4 text-center small">
-        <span class="mr-2">
-          <i class="fas fa-circle text-primary"></i> Inrichting
-        </span>
-        <span class="mr-2">
-          <i class="fas fa-circle text-success"></i> Ontwerp
-        </span>
-          <span class="mr-2">
-          <i class="fas fa-circle" style="color: #36b9cc;"></i> Uitvoer
-        </span>
-          <span class="mr-2">
-          <i class="fas fa-circle" style="color: #DF9C55;"></i> Oplevering
-        </span>
-          <span class="mr-2">
-          <i class="fas fa-circle" style="color: #DF95A3;"></i> Overig
-        </span>
-      </div>
+        {% if object.get_vpi_data %}
+            <div class="chart-pie">
+                <canvas id="vpi_{{ object.vpi.id }}"></canvas>
+            </div>
+        {% else %}
+            Geen data
+        {% endif %}
     </div>
   </div>
 </div>
 
-{{ object.get_vpi_data|json_script:object.vpi.id }}
-<script>
-    const data = JSON.parse(document.getElementById('{{ object.vpi.id }}').textContent);
+{% if not object.get_vpi_data is None %}
+    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'additional_js/chartjs-plugin-colorschemes.js' %}"></script>
+    {{ object.get_vpi_data|json_script:object.vpi.id }}
+    <script>
+        const data = JSON.parse(document.getElementById('{{ object.vpi.id }}').textContent);
 
-    var config = {
-      type: 'pie',
-      data: {
-        datasets: [{
-          data: data.data,
-          backgroundColor: [
-            '#4e73df', '#1cc88a', '#36b9cc', '#DF9C55', '#DF95A3'
-          ],
-          hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#DF854E', '#DF7CA0'],
-          hoverBorderColor: "rgba(234, 236, 244, 1)",
-        }],
-        labels: data.labels
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        tooltips: {
-          backgroundColor: "rgb(255,255,255)",
-          bodyFontColor: "#858796",
-          borderColor: '#dddfeb',
-          borderWidth: 1,
-          xPadding: 15,
-          yPadding: 15,
-          displayColors: false,
-          caretPadding: 10,
-        },
-        legend: {
-          display: false
-        },
-        cutoutPercentage: 80,
-      },
-    };
-
-    window.onload = function() {
-      var context = document.getElementById('vpi_{{ object.vpi.id }}').getContext('2d');
-      window.myPie = new Chart(context, config);
-    };
-</script>
+        var context = document.getElementById('vpi_{{ object.vpi.id }}').getContext('2d');
+        var myPieChart = new Chart(context, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: data.data,
+                    backgroundColor: Chart['colorschemes'].tableau.ClassicBlueRed12,
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+                labels: data.labels
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: true,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 10,
+                    }
+                },
+            },
+        });
+    </script>
+{% endif %}

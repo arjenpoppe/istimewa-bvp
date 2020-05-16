@@ -1,14 +1,19 @@
 from django.db import models
 
 from data.models.project import Project
-from vpi.models import VPIDataContainer
 from vpi.models import VPI
 
 
 class Dashboard(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        if self.project:
+            return f'{self.project.number}: {self.project.name}'
+        else:
+            return self.name
 
     def get_ordered_objects(self):
         """
@@ -39,11 +44,13 @@ class DashboardObject(models.Model):
     CARD = 'card'
     BAR = 'bar'
     PIE = 'pie'
+    TABLE = 'table'
     CHART_CHOICES = [
         (AREA, 'Area chart'),
         (CARD, 'Card'),
         (BAR, 'Bar chart'),
-        (PIE, 'Pie chart')
+        (PIE, 'Pie chart'),
+        (TABLE, 'Table')
     ]
 
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
@@ -52,40 +59,44 @@ class DashboardObject(models.Model):
     col_width = models.IntegerField()
     row_number = models.IntegerField()
     row_order = models.IntegerField()
+    vpi_data = None
+
+    class Meta(object):
+        unique_together = (('dashboard', 'row_number', 'row_order'),)
 
     def get_vpi_data(self):
         """
         Return data for vpi's included in this dashboard
-        @return: list of VPIDataContainer
+        @return: VPI data in either a dictionary or float format.
         """
-        vpi_data = None
-        if self.dashboard.project:
-            vpi_data = self.vpi.get_value(self.dashboard.project.number)
-        else:
-            vpi_data = self.vpi.get_value()
+        if not self.vpi_data:
+            self.vpi_data = self.vpi.get_value(self.dashboard.project)
 
-        print('dashboard get_vpi_data called', vpi_data)
+        return self.vpi_data
 
-        return vpi_data
+    def get_vpi_target_color(self):
+        """
+        Returns the target color of a vpi value.
+        @return: bootstrap color (danger/warning/success)
+        """
+        vpi_value = self.get_vpi_data()
+        if not vpi_value is None:
+            vpi_target = self.vpi.get_target(self.dashboard.project)
+            upper_limit = vpi_target.upper_limit
+            lower_limit = vpi_target.lower_limit
 
-
-# class ProjectDashboard(GeneralDashboard):
-#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-#
-#     def get_vpi_data(self):
-#         """
-#         Return data for vpi's included in this dashboard
-#         @return: list of VPIDataContainer
-#         """
-#         vpi_data_list = []
-#
-#         for vpi in self.vpis.all():
-#             vpi_data = vpi.get_value(self.project.number)
-#             vpi_data_list.append(VPIDataContainer(vpi, vpi_data))
-#
-#         return vpi_data_list
-
-
+            if lower_limit <= vpi_value <= upper_limit:
+                return 'warning'
+            elif vpi_target.is_better == 'higher':
+                if vpi_value > upper_limit:
+                    return 'success'
+                else:
+                    return 'danger'
+            elif vpi_target.is_better == 'lower':
+                if vpi_value < lower_limit:
+                    return 'success'
+                else:
+                    return 'danger'
 
 
 

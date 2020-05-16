@@ -25,6 +25,7 @@ urlpatterns = [
     path('polls/', include('polls.urls')),
     path('data/', include('data.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', views.logout, name='logout')

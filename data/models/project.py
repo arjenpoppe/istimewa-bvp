@@ -35,6 +35,7 @@ class OpdrachtgeverContactPersoon(models.Model):
 
 
 class Project(models.Model):
+    # TODO add surrogate primary key on next database drop
     number = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
