@@ -17,10 +17,10 @@ class Dashboard(models.Model):
 
     def get_ordered_objects(self):
         """
-        Return dastboard objects ordered by row number and row order
+        Return dashboard objects ordered by row number and row order
         @return: Queryset of DashboardObjects
         """
-        return DashboardObject.objects.order_by('row_number', 'row_order').filter(dashboard=self)
+        return self.objects.order_by('row_number', 'row_order').filter(dashboard=self)
 
     def get_ordered_objects_by_row(self):
         """
