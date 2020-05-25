@@ -22,7 +22,7 @@ functions return float values.
 def klanttevredenheid(project):
     """
     Calculate the average klanttevredenheid.
-    @param project_id: optional project to get project specific klanttevredenheid
+    @param project: optional project to get project specific klanttevredenheid
     @return: avarege klanttevredenheid score in float
     """
     finished_prestatiemetingen = Prestatiemeting.objects.filter(filled_on__isnull=False, filled_og__isnull=False)
@@ -180,3 +180,19 @@ def verhouding_projectfasen(project):
     }
 
     return context
+
+
+# def get_vpi_data(model, calc_way, attribute, *columns, **filters):
+#     if not attribute in columns:
+#         return None
+#
+#     data = model.objects.values(columns).filter(filters)
+#
+#     Deviation
+#     Sum
+#     Avg
+#     Min
+#     Max
+#     Count
+#     Annotate
+#     Aggregate

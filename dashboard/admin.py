@@ -8,7 +8,7 @@ class DashboardObjectInline(admin.TabularInline):
 
 class DashboardAdmin(admin.ModelAdmin):
     inlines = [DashboardObjectInline]
-    list_display = ('name', 'description', 'project')
+    list_display = ('name', 'description')
 
 
 admin.site.register(Dashboard, DashboardAdmin)

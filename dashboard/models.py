@@ -34,8 +34,6 @@ class Dashboard(models.Model):
         for row_number in range(1, row_amount + 1):
             object_rows.append(DashboardObject.objects.filter(dashboard=self, row_number=row_number).order_by('row_order'))
 
-        print(object_rows)
-
         return object_rows
 
 
@@ -45,12 +43,14 @@ class DashboardObject(models.Model):
     BAR = 'bar'
     PIE = 'pie'
     TABLE = 'table'
+    PROGRESS = 'progress'
     CHART_CHOICES = [
         (AREA, 'Area chart'),
         (CARD, 'Card'),
         (BAR, 'Bar chart'),
         (PIE, 'Pie chart'),
-        (TABLE, 'Table')
+        (TABLE, 'Table'),
+        (PROGRESS, 'Progress')
     ]
 
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
@@ -97,7 +97,6 @@ class DashboardObject(models.Model):
                     return 'success'
                 else:
                     return 'danger'
-
 
 
 class Report(models.Model):

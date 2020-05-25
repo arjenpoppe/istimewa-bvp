@@ -116,13 +116,14 @@ def upload_ultimo(request):
     dataset.load(request.FILES['datafile'].read())
 
     try:
-        result = resource.import_data(dataset, dry_run=True)  # Test the data import
+        result = resource.import_data(dataset, dry_run=True, raise_errors=True)  # Test the data import
     except ValidationError as err:
         messages.error(request, f'Er is een validatie error opgetreden: {err}')
         return redirect('data:upload')
 
     if not result.has_errors():
-        resource.import_data(dataset, dry_run=False)  # Actually import now
+        result = resource.import_data(dataset, dry_run=False)  # Actually import now
+        messages.success(request, f'{result.total_rows} records geupload.')
 
 
 def upload_prestatiemeting(request):

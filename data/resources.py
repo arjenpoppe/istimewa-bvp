@@ -1,6 +1,6 @@
 from import_export import resources
 from import_export.fields import Field
-from import_export.widgets import DateTimeWidget
+from import_export.results import RowResult
 
 from .models.sources import Ultimo, Sap
 
@@ -77,8 +77,25 @@ class UltimoResource(resources.ModelResource):
     gevalideerd_door_rws = Field(attribute='gevalideerd_door_rws', column_name='Gevalideerd door RWS')
     ontvangen_rws = Field(attribute='ontvangen_rws', column_name='Ontvangen RWS')
 
+    # def import_row(self, row, instance_loader, **kwargs):
+    #     # overriding import_row to ignore errors and skip rows that fail to import
+    #     # without failing the entire import
+    #     import_result = super(UltimoResource, self).import_row(row, instance_loader, **kwargs)
+    #     if import_result.import_type == RowResult.IMPORT_TYPE_ERROR:
+    #         # Copy the values to display in the preview report
+    #         import_result.diff = [row[val] for val in row]
+    #         # Add a column with the error message
+    #         import_result.diff.append('Errors: {}'.format([err.error for err in import_result.errors]))
+    #         # clear errors and mark the record to skip
+    #         import_result.errors = []
+    #         import_result.import_type = RowResult.IMPORT_TYPE_SKIP
+    #
+    #     return import_result
+
     class Meta:
         model = Ultimo
+        skip_unchanged = True
+        report_skipped = True
         import_id_fields = ('code',)
 
 

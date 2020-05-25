@@ -1,4 +1,4 @@
-<div class="col-6">
+<div class="col-xl-{{ object.col_width }}">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-primary">
@@ -6,24 +6,26 @@
             </h6>
         </div>
         <div class="card-body scroll">
-            <table class="table table-sm mb-0">
-                <thead>
-                    <tr>
-                        {% for header in object.get_vpi_data.headers %}
-                            <th scope="col">{{ header }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in object.get_vpi_data.rows %}
+            <div style="height: 20rem;">
+                <table class="table table-sm mb-0">
+                    <thead>
                         <tr>
-                            {% for value in row %}
-                                <td scope="row">{{ value }}</td>
+                            {% for header in object.get_vpi_data.headers %}
+                                <th scope="col">{{ header }}</th>
                             {% endfor %}
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for row in object.get_vpi_data.rows %}
+                            <tr>
+                                {% for value in row %}
+                                    <td scope="row">{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

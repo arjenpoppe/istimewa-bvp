@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="col-{{ object.col_width }}">
+<div class="col-xl-{{ object.col_width }}">
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
       <h6 class="m-0 font-weight-bold text-primary">{{ object.vpi.name }}</h6>
@@ -35,6 +35,9 @@
     <script src="{% static 'additional_js/chartjs-plugin-colorschemes.js' %}"></script>
     {{ object.get_vpi_data|json_script:object.vpi.id }}
     <script>
+        Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#858796';
+
         const data = JSON.parse(document.getElementById('{{ object.vpi.id }}').textContent);
 
         var context = document.getElementById('vpi_{{ object.vpi.id }}').getContext('2d');

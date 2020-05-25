@@ -42,12 +42,13 @@ class VPI(models.Model):
 
     def get_value(self, project=None):
         """
-        Generic function which calls the function that returns the values for this specific vpi. Returns cached value
-        if available.
+        Generic function which calls the related vpi function, returning the values for this specific vpi. Returns
+        cached data if available.
         @param project: (optional) project object
         @return: data can be dictionary or float
         """
-        return getattr(vpis, f'{self.function}')(project)
+        if self.function:
+            return getattr(vpis, f'{self.function}')(project)
 
     def get_target(self, project=None):
         """
