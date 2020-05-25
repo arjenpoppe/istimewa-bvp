@@ -3,14 +3,12 @@ from django.db.models.functions import TruncMonth
 from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult, PrestatiemetingQuestion
 
 from django.db.models import Sum, Count, F, Avg
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from data.models.project import ProjectActiviteit, ProjectFase, Project
+from data.models.project import ProjectFase, Project
 from data.models.sources import Sap, Ultimo
-
-import random
+from vpi.models import VPIValueNumber
 
 """
 These functions get called from the VPI model. The function signatures are saved in the model and called by get_value().
@@ -58,8 +56,14 @@ def aanrijtijd(project):
     total = 0
 
     for row in data:
-        aanrijtijd = row.aankomsttijd - row.melddatum
-        total += aanrijtijd.total_seconds()
+        project_number = None
+        if row.code.startswith('P/'):
+            project_number = row.code[:8]
+            print(project_number)
+        aanrijtijd = (row.aankomsttijd - row.melddatum).seconds
+        VPIValueNumber(value=aanrijtijd, vpi_id=10, happened=row.melddatum, project_number=project_number).save()
+
+        total += aanrijtijd
 
     return (total / 60) / len(data)
 
@@ -82,8 +86,13 @@ def functioneel_hersteltijd(project):
     total = 0
 
     for row in data:
-        aanrijtijd = row.functioneel_herstel_tijd - row.melddatum
-        total += aanrijtijd.total_seconds()
+        project_number = None
+        if row.code.startswith('P/'):
+            project_number = row.code[:8]
+        hersteltijd = (row.functioneel_herstel_tijd - row.melddatum).seconds
+        VPIValueNumber(value=hersteltijd, vpi_id=11, happened=row.melddatum, project_number=project_number).save()
+
+        total += hersteltijd
 
     return (total / 60) / len(data)
 
@@ -110,12 +119,12 @@ def aantal_storingen_monthly(project):
 
     data = list(data.values_list('total', flat=True))
 
-    data = {
+    context = {
         'data': data,
         'labels': months
     }
 
-    return data
+    return context
 
 
 def prestatiemeting_opbouw(project):
@@ -141,12 +150,12 @@ def prestatiemeting_opbouw(project):
         score = prestatiemeting_results.filter(question=question).aggregate(avg=Avg('answer__gradation__score'))
         rows.append([theme, f'{weight}%', score['avg']])
 
-    data = {
+    context = {
         'headers': ['Thema', 'Weging', 'Score'],
         'rows': rows
     }
 
-    return data
+    return context
 
 
 def verhouding_projectfasen(project):
@@ -182,11 +191,15 @@ def verhouding_projectfasen(project):
     return context
 
 
-# def get_vpi_data(model, calc_way, attribute, *columns, **filters):
-#     if not attribute in columns:
-#         return None
-#
-#     data = model.objects.values(columns).filter(filters)
+def get_vpi_data(model, attribute, *columns, **filters):
+    if not attribute in columns:
+        return None
+
+    data = model.objects.values(columns).filter(filters)
+
+    return data
+
+# model.objects.filter()
 #
 #     Deviation
 #     Sum

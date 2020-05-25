@@ -77,8 +77,6 @@ class Ultimo(models.Model):
         return self.code
 
 
-
-
 class Sap(models.Model):
     object = models.CharField(max_length=100, null=True, blank=True)
     wbs_element = models.CharField(max_length=100, null=True, blank=True)

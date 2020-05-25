@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from data.helpers.excel import prestatiemeting_report
 from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingResult, PrestatiemetingQuestion
 from data.models.project import Project
-from vpi.models import VPI
+from vpi.models import VPI, VPIValue
 from .models import Report, Dashboard, DashboardObject
 
 
@@ -14,6 +14,7 @@ from .models import Report, Dashboard, DashboardObject
 @permission_required('perms.view_dashboard', login_url='login')
 def general_dashboard(request, dashboard_id):
     dashboard = get_object_or_404(Dashboard, id=dashboard_id)
+    print(VPIValue.objects.select_subclasses())
     return render(request, 'dashboard/dashboard.html', {'dashboard': dashboard})
 
 

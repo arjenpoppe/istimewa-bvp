@@ -1,38 +1,12 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from vpi import vpis
+from model_utils.managers import InheritanceManager
 
 
 class VPI(models.Model):
-    AREA = 'AC'
-    CARD = 'CA'
-    BAR = 'BC'
-    PIE = 'PC'
-    CHART_CHOICES = [
-        (AREA, 'Area chart'),
-        (CARD, 'Card'),
-        (BAR, 'Bar chart'),
-        (PIE, 'Pie chart')
-    ]
-
-    AVG = 'avg'
-    LAST = 'last'
-    FIRST = 'first'
-    SINGLE = 'single'
-    MEASURE_CHOICES = [
-        (AVG, 'Gemiddlede'),
-        (LAST, 'Laatste'),
-        (FIRST, 'Eerste'),
-        (SINGLE, 'Enkele waarde')
-    ]
-
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     measuring_unit = models.CharField(max_length=20, blank=True)
-    formula = models.CharField(max_length=200, blank=True, null=True)
-    theme = models.CharField(max_length=100, blank=True, null=True)
-    type = models.CharField(max_length=20, blank=True, null=True)
-    chart_type = models.CharField(max_length=2, choices=CHART_CHOICES)
-    label = models.CharField(max_length=20)
     function = models.CharField(max_length=30, null=True, blank=True)
     has_subset = models.BooleanField(default=False)
     decimal_amount = models.IntegerField(default=2)
@@ -40,15 +14,15 @@ class VPI(models.Model):
     def __str__(self):
         return f'{self.name}'
 
-    def get_value(self, project=None):
-        """
-        Generic function which calls the related vpi function, returning the values for this specific vpi. Returns
-        cached data if available.
-        @param project: (optional) project object
-        @return: data can be dictionary or float
-        """
-        if self.function:
-            return getattr(vpis, f'{self.function}')(project)
+    # def get_value(self, project=None):
+    #     """
+    #     Generic function which calls the related vpi function, returning the values for this specific vpi. Returns
+    #     cached data if available.
+    #     @param project: (optional) project object
+    #     @return: data can be dictionary or float
+    #     """
+    #     if self.function:
+    #         return getattr(vpis, f'{self.function}')(project)
 
     def get_target(self, project=None):
         """
@@ -65,20 +39,27 @@ class VPI(models.Model):
 
 
 class VPIValue(models.Model):
-    value = models.FloatField()
     vpi = models.ForeignKey(VPI, on_delete=models.CASCADE)
+    happened = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
+    project_number = models.CharField(max_length=8, null=True, blank=True)
+    objects = InheritanceManager()
 
-    def __str__(self):
-        return str(self.value)
+
+class VPIValueNumber(VPIValue):
+    value = models.FloatField()
+
+
+class VPIValueBoolean(VPIValue):
+    value = models.BooleanField()
 
 
 class VPITarget(models.Model):
     LOWER = 'lower'
     HIGHER = 'higher'
     CHOICES = [
-        (LOWER, 'Lower'),
-        (HIGHER, 'Higher')
+        (LOWER, 'Lager is beter'),
+        (HIGHER, 'Hoger is better')
     ]
     vpi = models.ForeignKey(to='vpi.VPI', on_delete=models.CASCADE)
     lower_limit = models.FloatField()

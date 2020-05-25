@@ -1,6 +1,7 @@
 from django.db import models
 
 from data.models.project import Project
+from vpi import vpis
 from vpi.models import VPI
 
 
@@ -70,7 +71,8 @@ class DashboardObject(models.Model):
         @return: VPI data in either a dictionary or float format.
         """
         if not self.vpi_data:
-            self.vpi_data = self.vpi.get_value(self.dashboard.project)
+            if self.vpi.function:
+                self.vpi_data = getattr(vpis, f'{self.vpi.function}')(self.dashboard.project)
 
         return self.vpi_data
 
