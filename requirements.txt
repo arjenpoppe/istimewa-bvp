@@ -7,13 +7,18 @@ defusedxml==0.6.0
 diff-match-patch==20181111
 Django==3.0.3
 django-import-export==2.0.2
+django-model-utils==4.0.0
+docutils==0.16
 et-xmlfile==1.0.1
 future==0.18.2
 isort==4.3.21
 jdcal==1.4.1
 lazy-object-proxy==1.4.3
 lml==0.0.9
+Mako==1.1.2
+Markdown==3.2.2
 MarkupPy==1.14
+MarkupSafe==1.1.1
 mccabe==0.6.1
 mysqlclient==1.4.6
 numpy==1.18.3
@@ -21,6 +26,7 @@ odfpy==1.4.1
 openpyxl==3.0.3
 pandas==1.0.3
 pathlib==1.0.1
+pdoc3==0.8.1
 pefile==2019.4.18
 pyexcel-io==0.5.20
 pyexcel-xls==0.5.8
