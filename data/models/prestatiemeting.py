@@ -128,7 +128,8 @@ class Prestatiemeting(models.Model):
     def get_score_og(self):
         return self.get_score(PrestatiemetingQuestion.OPDRACHTGEVER)
 
-    def get_date_finished(self):
+    @property
+    def date_finished(self):
         if self.filled_og > self.filled_on:
             return self.filled_og
         else:
@@ -140,6 +141,9 @@ class Prestatiemeting(models.Model):
     def get_individual_score(self, question_number):
         result = self.prestatiemetingresult_set.get(question_id=question_number)
         return result.answer.gradation.score
+
+    def get_results(self):
+        return {'x': self.date_finished, 'y': self.get_score_on()}
 
 
 class PrestatiemetingGradation(models.Model):

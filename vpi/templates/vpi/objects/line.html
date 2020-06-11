@@ -1,0 +1,141 @@
+{% load static %}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card shadow mb-4">
+            <a href="#collapseFilters" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseFilters">
+                <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
+            </a>
+            <div class="collapse" id="collapseFilters" style="">
+                <div class="card-body">
+
+
+                        <div class="col-xl-4">
+                            <div class="form-group">
+                                <label class="mr-sm-2" for="datepicker-from">Van: </label>
+                                <input name="date-from" type="date" class="datetime form-control mr-sm-2" id="datepicker-from">
+                            </div>
+                            <div class="form-group">
+                                <label class="mr-sm-2" for="datepicker-to">Tot: </label>
+                                <input name="date-to" type="date" class="datetime form-control mr-sm-2" id="datepicker-to">
+                            </div>
+                        </div>
+                        <button id="filter" class="btn btn-primary">Filter</button>
+                        <button id="reset" class="btn btn-primary">Reset</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+      <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">Historisch verloop</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="myAreaChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="{% static 'vendor/chart.js/Chart.bundle.min.js' %}"></script>
+<script src="{% static 'dashboard/js/trendline.js' %}"></script>
+{{ data|json_script:"data" }}
+<script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+Chart.defaults.global.defaultFontColor = '#858796';
+
+const data = JSON.parse(document.getElementById('data').textContent);
+
+let config = {
+  type: 'line',
+  data: {
+    datasets: [{
+        label: 'Result',
+        lineTension: 0.3,
+        backgroundColor: "rgba(78, 115, 223, 0.05)",
+        borderColor: "rgba(78, 115, 223, 1)",
+        pointRadius: 3,
+        pointBackgroundColor: "rgba(78, 115, 223, 1)",
+        pointBorderColor: "rgba(78, 115, 223, 1)",
+        pointHoverRadius: 3,
+        pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+        pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+        pointHitRadius: 10,
+        pointBorderWidth: 2,
+        data: data,
+        trendlineLinear: {
+            style: "rgba(255,105,180, .8)",
+            lineStyle: "dotted",
+            width: 2
+        },
+    }]
+  },
+  options: {
+    maintainAspectRatio: false,
+    responsive: true,
+    scales: {
+        xAxes: [{
+            type: 'time',
+            time: {
+                tooltipFormat: 'll HH:mm',
+            },
+            display: true,
+            scaleLabel: {
+                display: true,
+                labelString: 'Datum'
+            },
+        }],
+        yAxes: [{
+            display: true,
+            scaleLabel: {
+                display: true,
+                labelString: 'Waarde'
+            },
+            ticks: {
+                beginAtZero: true
+            }
+        }]
+    },
+    legend: {
+        display: false
+    }
+  }
+};
+
+window.onload = function() {
+    let ctx = document.getElementById('myAreaChart').getContext('2d');
+    window.myLine = new Chart(ctx, config);
+};
+
+document.getElementById('filter').addEventListener('click', function() {
+    let date_from = document.getElementById('datepicker-from').value;
+    let date_to = document.getElementById('datepicker-to').value;
+
+    config.data.datasets.forEach(function(dataset) {
+        dataset.data = data.filter(function (dict_value) {
+            return dict_value.x > date_from && dict_value.x < date_to;
+        });
+    });
+
+    window.myLine.update();
+})
+
+document.getElementById('reset').addEventListener('click', function () {
+    config.data.datasets.forEach(function (dataset) {
+        dataset.data = data
+    })
+    window.myLine.update();
+})
+
+
+
+</script>

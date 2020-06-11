@@ -8,7 +8,6 @@ from dateutil.relativedelta import relativedelta
 
 from data.models.project import ProjectFase, Project
 from data.models.sources import Sap, Ultimo
-from vpi.models import VPIValueNumber
 
 """
 These functions get called from the VPI model. The function signatures are saved in the model and called by get_value().
@@ -20,13 +19,17 @@ functions return float values.
 def klanttevredenheid(project):
     """
     Calculate the average klanttevredenheid.
-    @param project: optional project to get project specific klanttevredenheid
-    @return: avarege klanttevredenheid score in float
+    @param filters:
+    @param interval:
+    @param action:
+    @return: average klanttevredenheid score in float
     """
-    finished_prestatiemetingen = Prestatiemeting.objects.filter(filled_on__isnull=False, filled_og__isnull=False)
+    filters = {'filled_on__isnull': False, 'filled_og__isnull': False}
+
+    finished_prestatiemetingen = Prestatiemeting.objects.filter(**filters)
+
     if project:
-        finished_prestatiemetingen = finished_prestatiemetingen.filter(project=project)
-        print(finished_prestatiemetingen)
+        finished_prestatiemetingen.filter(project=project)
 
     if len(finished_prestatiemetingen) == 0:
         return None
@@ -61,7 +64,7 @@ def aanrijtijd(project):
             project_number = row.code[:8]
             print(project_number)
         aanrijtijd = (row.aankomsttijd - row.melddatum).seconds
-        VPIValueNumber(value=aanrijtijd, vpi_id=10, happened=row.melddatum, project_number=project_number).save()
+        # VPIValueNumber(value=aanrijtijd, vpi_id=10, happened=row.melddatum, project_number=project_number).save()
 
         total += aanrijtijd
 
@@ -90,7 +93,7 @@ def functioneel_hersteltijd(project):
         if row.code.startswith('P/'):
             project_number = row.code[:8]
         hersteltijd = (row.functioneel_herstel_tijd - row.melddatum).seconds
-        VPIValueNumber(value=hersteltijd, vpi_id=11, happened=row.melddatum, project_number=project_number).save()
+        # VPIValueNumber(value=hersteltijd, vpi_id=11, happened=row.melddatum, project_number=project_number).save()
 
         total += hersteltijd
 

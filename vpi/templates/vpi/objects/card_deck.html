@@ -1,0 +1,81 @@
+{% load dict_tools %}
+{% load value_tools %}
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+      {% with data|last as last_dict %}
+        <div class="card border-left-{{ vpi|color:last_dict.y }} shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <p class="text-xs font-weight-bold text-{{ vpi|color:last_dict.y }} text-uppercase mb-1">Meest recente waarde</p>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800" id="recent">
+                        {{ last_dict.y|floatformat:1 }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+      {% endwith %}
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+      {%  with value=data|highest:'y' %}
+        <div class="card border-left-{{ vpi|color:value }} shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <p class="text-xs font-weight-bold text-{{ vpi|color:value }} text-uppercase mb-1">Hoogste waarde</p>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" id="highest">
+                  {{ value|floatformat:1 }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-calendar fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+        {% endwith %}
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+      {%  with value=data|lowest:'y' %}
+        <div class="card border-left-{{ vpi|color:value }} shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <p class="text-xs font-weight-bold text-{{ vpi|color:value }} text-uppercase mb-1">Laagste waarde</p>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800" id="lowest">
+                    {{ value|floatformat:1 }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+      {% endwith %}
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+      {%  with value=data|average:'y' %}
+        <div class="card border-left-{{ vpi|color:value }} shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <p class="text-xs font-weight-bold text-{{ vpi|color:value }} text-uppercase mb-1">Gemiddelde waarde</p>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" id="average">
+                {{ value|floatformat:1 }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-calendar fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+        {% endwith %}
+    </div>
+</div>

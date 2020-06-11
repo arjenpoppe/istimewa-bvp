@@ -6,5 +6,5 @@ from . import views
 app_name = 'vpi'
 urlpatterns = [
     path('', views.search, name='index'),
-    path('<int:pk>/', views.DetailView.as_view(), name='detail'),
+    path('<int:vpi_id>/', views.details, name='detail'),
 ]

@@ -1,4 +1,3 @@
-import time
 from datetime import datetime
 
 import xlrd
@@ -12,7 +11,7 @@ from tablib import Dataset
 
 from data.helpers.excel import export_prestatiemeting
 from data.helpers.validator import validate_prestatiemeting_import
-from vpi.models import VPI
+from vpi.models import VPI, VPIValuePrestatiemeting
 from .models.forms import Form
 from .models.prestatiemeting import PrestatiemetingTheme, Prestatiemeting, \
     PrestatiemetingConfig, PrestatiemetingResult, PrestatiemetingAnswer
@@ -146,8 +145,9 @@ def upload_prestatiemeting(request):
         pm.excel_file = data
         pm.save()
 
-        # val = VPIValue(vpi_id=1, value=calc_klanttevredenheid(pm.id))
-        # val.save()
+        if pm.is_finished():
+            VPIValuePrestatiemeting(vpi_id=1, prestatiemeting=pm, happened=pm.date_finished,
+                                    project_number=pm.project.number)
     else:
         messages.error(request, error)
         print(messages)
@@ -251,6 +251,10 @@ def prestatiemeting(request, prestatiemeting_id):
         pm.filled_on = datetime.now()
         pm.submitted_by = request.user
         pm.save()
+
+        if pm.is_finished():
+            VPIValuePrestatiemeting(vpi_id=1, prestatiemeting=pm, happened=pm.date_finished(),
+                                    project_number=pm.project.number)
         return redirect('data:forms')
 
     if pm.is_submitted_by_on():

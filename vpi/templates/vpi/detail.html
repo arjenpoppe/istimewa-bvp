@@ -8,80 +8,59 @@
 {% endblock %}
 
 {% block content %}
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-    <div class="row">
-        <div class="col-6">
-            <div class="card shadow mb-4">
-                <div class="card-header">
-                    <p class="card-text">{{ vpi.name }}</p>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">{{ vpi.description }}</p>
-                    <p class="card-text">Gemeten in: <b>{{ vpi.measuring_unit }}</b></p>
-                </div>
+    {% include 'vpi/objects/card_deck.html' with data=data vpi=vpi %}
+    <div class="card-deck">
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <p class="card-text">VPI omschrijving</p>
             </div>
-        </div>
-    </div>
-
-
-    <!-- Earnings (Monthly) Card Example -->
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card border-left-{{ vpi.get_target_color }} shadow h-100 py-2">
             <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                  <div class="text-xs font-weight-bold text-{{ vpi.get_target_color }} text-uppercase mb-1">{{ vpi.name}}</div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vpi.get_value|floatformat:1 }} {{ vpi.measuring_unit }}</div>
-                </div>
-                <div class="col-auto">
-                  <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                </div>
-              </div>
+                <p class="card-text">{{ vpi.description }}</p>
+                <p class="card-text">
+                    {% if vpi.measuring_unit %}
+                        Gemeten in: <b>{{ vpi.measuring_unit }}</b>
+                    {% endif %}
+                </p>
             </div>
-          </div>
         </div>
-    </div>
 
-    <!-- Area Chart -->
-    <div class="row">
-        <div class="col-xl-8 col-lg-7">
-          <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-              <h6 class="m-0 font-weight-bold text-primary">Historisch verloop</h6>
-              <div class="dropdown no-arrow">
-                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                  <div class="dropdown-header">Dropdown Header:</div>
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-              </div>
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <p class="card-text">VPI doel</p>
             </div>
-            <!-- Card Body -->
             <div class="card-body">
-              <div class="chart-area">
-                <canvas id="myAreaChart"></canvas>
-              </div>
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Groen</th>
+                            <th>Geel</th>
+                            <th>Rood</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for target in vpi.vpitarget_set.all %}
+                            <tr>
+                                {% if target.project %}
+                                    <td>{{ target.project }}</td>
+                                {% else %}
+                                    <td>Algemeen</td>
+                                {% endif %}
+                                {% if target.is_better == 'higher' %}
+                                    <td>&gt {{ target.upper_limit }}</td>
+                                    <td>{{ target.lower_limit }} - {{ target.upper_limit }}</td>
+                                    <td>&lt {{ target.lower_limit }}</td>
+                                {% elif target.is_better == 'lower' %}
+                                    <td>&lt {{ target.lower_limit }}</td>
+                                    <td>{{ target.lower_limit }} - {{ target.upper_limit }}</td>
+                                    <td>&gt {{ target.upper_limit }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-          </div>
         </div>
     </div>
-
-
+    {% include 'vpi/objects/line.html' with data=data %}
 {% endblock content%}
-
-{% block scripts %}
-  {{ block.super }}
-  <!-- Page level plugins -->
-  <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
-
-  <!-- Page level custom scripts -->
-  <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
-  <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
-{% endblock %}

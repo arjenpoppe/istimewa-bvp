@@ -5,7 +5,8 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.views import generic
 
-from .models import VPI
+from data.models.project import Project
+from .models import VPI, FilterObjectDateTime, FilterObjectString
 
 
 def index(request):
@@ -35,10 +36,31 @@ def search(request):
     return render(request, "vpi/search.html", context=ctx)
 
 
-class DetailView(PermissionRequiredMixin, generic.DetailView):
-    permission_required = 'perms.view_dashboard'
-    model = VPI
-    template_name = 'vpi/detail.html'
+def details(request, vpi_id):
+    projects = Project.objects.all()
+    vpi = VPI.objects.get(pk=vpi_id)
+
+    vpi_detail_object = vpi.vpidetailobject_set.get()
+
+    data_container = vpi_detail_object.get_data_test()
+
+    data = []
+
+    for result in data_container.data:
+        data.append(result.get_results())
+
+    if request.POST:
+        print(request.POST.get('date-from'))
+        print(request.POST.get('date-to'))
+        print(request.POST.get('project-select'))
+
+
+    context = {
+        'projects': projects,
+        'vpi': vpi,
+        'data': data
+    }
+    return render(request, 'vpi/detail.html', context=context)
 
     # def get_queryset(self):
     #     """

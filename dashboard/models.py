@@ -1,4 +1,7 @@
+import abc
+
 from django.db import models
+from model_utils.managers import InheritanceManager
 
 from data.models.project import Project
 from vpi import vpis
@@ -65,6 +68,21 @@ class DashboardObject(models.Model):
     class Meta(object):
         unique_together = (('dashboard', 'row_number', 'row_order'),)
 
+    @property
+    def filters(self):
+        """
+        Return collection of filters in a dictionary format
+        @return: Dict with filters
+        """
+        filter_dict = {}
+        if self.dashboard.project:
+            filter_dict['project'] = self.dashboard.project
+        filters = FilterObject.objects.filter(dashboard_object=self).select_subclasses()
+        for filter_object in filters:
+            filter_dict[filter_object.filter_by] = filter_object.filter_value
+
+        return filter_dict
+
     def get_vpi_data(self):
         """
         Return data for vpi's included in this dashboard
@@ -99,6 +117,25 @@ class DashboardObject(models.Model):
                     return 'success'
                 else:
                     return 'danger'
+
+
+class FilterObject(models.Model):
+    dashboard_object = models.ForeignKey(DashboardObject, on_delete=models.CASCADE)
+    filter_by = models.CharField(max_length=100)
+    filter_value = None
+    objects = InheritanceManager()
+
+
+class FilterObjectBoolean(FilterObject):
+    filter_value = models.BooleanField()
+
+
+class FilterObjectString(FilterObject):
+    filter_value = models.CharField(max_length=100)
+
+
+class FilterObjectDateTime(FilterObject):
+    filter_value = models.DateTimeField()
 
 
 class Report(models.Model):
