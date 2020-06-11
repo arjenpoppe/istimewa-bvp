@@ -42,6 +42,20 @@ def klanttevredenheid(project):
     return total / len(finished_prestatiemetingen)
 
 
+# def klanttevredenheid(container):
+#     """
+#     Calculate the average klanttevredenheid.
+#     @param container: data container for the required data
+#     @return: average klanttevredenheid score in float
+#     """
+#     values = []
+#
+#     for prestatiemeting in container.data:
+#         values.append({'x': prestatiemeting.date_finished, 'y': prestatiemeting.get_score_on()})
+#
+#     return values
+
+
 def aanrijtijd(project):
     """
     Returns average aanrijtijd

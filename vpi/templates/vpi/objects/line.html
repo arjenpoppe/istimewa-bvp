@@ -7,21 +7,18 @@
             </a>
             <div class="collapse" id="collapseFilters" style="">
                 <div class="card-body">
-
-
-                        <div class="col-xl-4">
+                    <div class="col-xl-4">
+                        <div class="form-inline">
                             <div class="form-group">
                                 <label class="mr-sm-2" for="datepicker-from">Van: </label>
                                 <input name="date-from" type="date" class="datetime form-control mr-sm-2" id="datepicker-from">
-                            </div>
-                            <div class="form-group">
                                 <label class="mr-sm-2" for="datepicker-to">Tot: </label>
                                 <input name="date-to" type="date" class="datetime form-control mr-sm-2" id="datepicker-to">
+                                <button id="filter" class="btn btn-primary mr-sm-2">Filter</button>
+                                <button id="reset" class="btn btn-danger mr-sm-2">Reset</button>
                             </div>
                         </div>
-                        <button id="filter" class="btn btn-primary">Filter</button>
-                        <button id="reset" class="btn btn-primary">Reset</button>
-
+                    </div>
                 </div>
             </div>
         </div>

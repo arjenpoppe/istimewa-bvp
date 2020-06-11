@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import permission_required, login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, Http404
 from django.template.loader import render_to_string
 from django.views import generic
 
 from data.models.project import Project
-from .models import VPI, FilterObjectDateTime, FilterObjectString
+from .models import VPI, FilterObjectDateTime, FilterObjectString, VPIDetailObject
 
 
 def index(request):
@@ -40,7 +40,10 @@ def details(request, vpi_id):
     projects = Project.objects.all()
     vpi = VPI.objects.get(pk=vpi_id)
 
-    vpi_detail_object = vpi.vpidetailobject_set.get()
+    try:
+        vpi_detail_object = get_object_or_404(vpi.vpidetailobject_set.get())
+    except VPIDetailObject.DoesNotExist:
+        raise Http404
 
     data_container = vpi_detail_object.get_data_test()
 
