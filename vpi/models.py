@@ -43,6 +43,7 @@ class VPI(models.Model):
     has_subset = models.BooleanField(default=False)
     decimal_amount = models.IntegerField(default=2)
     source = models.ForeignKey(VPISource, on_delete=models.CASCADE)
+    type = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f'{self.name}'

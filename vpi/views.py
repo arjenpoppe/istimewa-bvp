@@ -41,7 +41,7 @@ def details(request, vpi_id):
     vpi = VPI.objects.get(pk=vpi_id)
 
     try:
-        vpi_detail_object = get_object_or_404(vpi.vpidetailobject_set.get())
+        vpi_detail_object = vpi.vpidetailobject_set.get()
     except VPIDetailObject.DoesNotExist:
         raise Http404
 
@@ -57,13 +57,12 @@ def details(request, vpi_id):
         print(request.POST.get('date-to'))
         print(request.POST.get('project-select'))
 
-
     context = {
         'projects': projects,
         'vpi': vpi,
         'data': data
     }
-    return render(request, 'vpi/detail.html', context=context)
+    return render(request, 'vpi/detail_prestatiemeting.html', context=context)
 
     # def get_queryset(self):
     #     """
