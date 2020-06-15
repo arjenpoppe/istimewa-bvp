@@ -5,26 +5,43 @@
 
 {% block content %}
     <div class="row">
-        <div class="card shadow mb-4 ml-4" style="width: 20rem;">
-            <img  class="card-img-top" src="{% static 'img/background_8.jpg' %}">
-            <div class="card-body">
-                <h5 class="card-title">Some title</h5>
-                <p class="card-text">{% lorem %}</p>
+        <div class="col-4">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    Toelichting applicatie
+                </div>
+                <div class="card-body">
+                    <p>
+                        Deze applicatie is ontwikkeld in opdracht van Istimewa. Het doel is om het verzamelen van data en het zoeken van prestatie indicatoren te automatiseren.
+                    </p>
+                    <p class="mb-0">
+                        De applicatie is opgebouwd in Python met behulp van het Django framework. Voor de insterface is gebruik gemaakt van het SB Admin 2 template.
+                    </p>
+                </div>
+            </div>
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        Prestatiemeten
+                    </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" src="static/img/prestatiemeting.png">
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="card shadow mb-4 ml-4" style="width: 20rem;">
-            <img  class="card-img-top" src="{% static 'img/background_8.jpg' %}">
-            <div class="card-body">
-                <h5 class="card-title">Some title</h5>
-                <p class="card-text">{% lorem %}</p>
-            </div>
-        </div>
-        <div class="card shadow mb-4 ml-4" style="width: 20rem;">
-            <img  class="card-img-top" src="{% static 'img/background_8.jpg' %}">
-            <div class="card-body">
-                <h5 class="card-title">Some title</h5>
-                <p class="card-text">{% lorem %}</p>
+        <div class="col-8">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    Applicatie context
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" src="static/img/project_overview.png">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 {% endblock content%}

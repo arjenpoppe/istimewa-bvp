@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'data.apps.DataConfig',
     'dashboard.apps.DashboardConfig',
     'vpi.apps.VpiConfig',
-    'polls.apps.PollsConfig',
     'import_export',
     'django.contrib.admin',
     'django.contrib.auth',

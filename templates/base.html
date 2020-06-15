@@ -18,7 +18,7 @@
 
   <!-- Custom fonts for this template-->
   <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+{#  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">#}
 
   <!-- Bootstrap css -->
   <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/scss/bootstrap.scss' %}">
@@ -105,20 +105,11 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
       
-      <!-- Nav Item - Admin menu -->
+       <!-- Nav Item - reporting -->
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAdmin" aria-expanded="true" aria-controls="collapseAdmin">
-          <i class="fas fa-fw fa-exclamation-triangle"></i>
-          <span>Admin</span>
-        </a>
-        <div id="collapseAdmin" class="collapse" aria-labelledby="headingAdmin" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Options:</h6>
-            <a class="collapse-item" href="{% url 'admin:index' %}">Systeem info</a>
-            <a class="collapse-item" href="{% url 'admin:index' %}">Data bewerken</a>
-              <a class="collapse-item" href="{% url 'admin:index' %}">Systeemlogs</a>
-          </div>
-        </div>
+        <a class="nav-link" href="{% url 'admin:index' %}">
+          <i class="fas fa-fw fa-cogs"></i>
+          <span>Beheren</span></a>
       </li>
 
 

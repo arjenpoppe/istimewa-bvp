@@ -22,7 +22,6 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('vpi/', include('vpi.urls')),
-    path('polls/', include('polls.urls')),
     path('data/', include('data.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
