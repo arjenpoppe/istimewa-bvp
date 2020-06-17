@@ -12,6 +12,10 @@ class Form(models.Model):
         return self.name
 
     def get_form_fields(self):
+        """
+        Get form fields from a Form object
+        @return: QuerySet of formfields
+        """
         return self.objects.formfield_set.all()
 
 

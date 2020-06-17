@@ -11,9 +11,17 @@ class PrestatiemetingTheme(models.Model):
         return self.theme
 
     def questions_on(self):
+        """
+        Get questions about ON from prestatiemeting theme object
+        @return: Queryset with questions
+        """
         return self.prestatiemetingquestion_set.filter(about='ON')
 
     def questions_og(self):
+        """
+        Get questions about OG from prestatiemeting theme object
+        @return: Queryset with questions
+        """
         return self.prestatiemetingquestion_set.filter(about='OG')
 
 
@@ -36,6 +44,10 @@ class PrestatiemetingQuestion(models.Model):
         return f'Question number: {self.number}'
 
     def get_avg_score(self):
+        """
+        Return average result of a prestatiemeting question
+        @return: avg prestatiemeting result for specific question
+        """
         return PrestatiemetingResult.objects.filter(question=self).aggregate(avg=Avg('answer__gradation__score'))
 
 
@@ -52,6 +64,11 @@ class Prestatiemeting(models.Model):
         return f'Project: {self.project}'
 
     def get_distinct_themes(self, about):
+        """
+        Return a set of disctict themes present in prestatiemeting object
+        @param about: PrestatiemetingQuestion.OPDRACHTNEMER or PrestatiemetingQuestion.OPDRACHTGEVER
+        @return: Queryset of prestatiemeting themes
+        """
         themes = PrestatiemetingTheme.objects.filter(id__in=self.prestatiemetingconfig_set.filter(
             question__about=about
         ).values_list(
@@ -61,12 +78,25 @@ class Prestatiemeting(models.Model):
         return themes
 
     def get_distinct_themes_on(self):
+        """
+        Return a set of distinct prestatiemeting themes for questions about ON only
+        @return: Queryset of prestatiemeting themes
+        """
         return self.get_distinct_themes(PrestatiemetingQuestion.OPDRACHTNEMER)
 
     def get_distinct_themes_og(self):
+        """
+        Return a set of distinct prestatiemeting themes for questions about OG only
+        @return: Queryset of prestatiemeting themes
+        """
         return self.get_distinct_themes(PrestatiemetingQuestion.OPDRACHTGEVER)
 
     def get_questions(self, about):
+        """
+        Return questions present in this prestatiemeting
+        @param about: PrestatiemetingQuestion.OPDRACHTNEMER or PrestatiemetingQuestion.OPDRACHTGEVER
+        @return: List of question ids
+        """
         questions = PrestatiemetingQuestion.objects.filter(
             number__in=self.prestatiemetingconfig_set.filter(
                 question__about=about
@@ -77,12 +107,24 @@ class Prestatiemeting(models.Model):
         return questions
 
     def get_questions_on(self):
+        """
+        Return list of questions about ON present in this prestatiemeting
+        @return: list of question ids
+        """
         return self.get_questions(PrestatiemetingQuestion.OPDRACHTNEMER)
 
     def get_questions_og(self):
+        """
+        Return list of questions about OG present in this prestatiemeting
+        @return: list of question ids
+        """
         return self.get_questions(PrestatiemetingQuestion.OPDRACHTGEVER)
 
     def save_excel_results(self, sheet):
+        """
+        Save the results of a prestatiemeting form OG -> ON
+        @param sheet: Excel sheet object
+        """
         question_amount = int(sheet.cell_value(0, 1).split('=')[1])
         PrestatiemetingResult.objects.filter(prestatiemeting=self,
                                              question__about=PrestatiemetingQuestion.OPDRACHTNEMER).delete()
@@ -100,15 +142,32 @@ class Prestatiemeting(models.Model):
             pmr.save()
 
     def is_submitted_by_og(self):
+        """
+        Check whether prestatiemeting is submitted by OG
+        @return: boolean
+        """
         return self.filled_og is not None
 
     def is_submitted_by_on(self):
+        """
+        Check whether prestatiemeting is submitted by ON
+        @return: boolean
+        """
         return self.filled_on is not None
 
     def is_configured(self):
+        """
+        Check whether there is an existing prestatiemeting config for this prestatiemeting
+        @return: boolean
+        """
         return len(PrestatiemetingConfig.objects.filter(prestatiemeting=self)) > 0
 
     def get_score(self, about):
+        """
+        Calculate the total score of a prestatiemeting
+        @param about: PrestatiemetingQuestion.OPDRACHTNEMER or PrestatiemetingQuestion.OPDRACHTGEVER
+        @return: (float) total score
+        """
         total_weight = 0
         result_list = self.prestatiemetingresult_set.filter(question__about=about)
 
@@ -123,26 +182,51 @@ class Prestatiemeting(models.Model):
         return total
 
     def get_score_on(self):
+        """
+        Calculate total score for ON of a prestatiemeting
+        @return: (float) total score
+        """
         return self.get_score(PrestatiemetingQuestion.OPDRACHTNEMER)
 
     def get_score_og(self):
+        """
+        Calculate total score for OG of a prestatiemeting
+        @return: (float) total score
+        """
         return self.get_score(PrestatiemetingQuestion.OPDRACHTGEVER)
 
     @property
     def date_finished(self):
+        """
+        property for the datetime on which the prestatiemething was finished
+        @return: (datetime)
+        """
         if self.filled_og > self.filled_on:
             return self.filled_og
         else:
             return self.filled_on
 
     def is_finished(self):
+        """
+        Check whether prestatiemeting is finished or not
+        @return: boolean
+        """
         return self.filled_og and self.filled_on
 
     def get_individual_score(self, question_number):
+        """
+        Get score for a specific question in this prestatiemeting
+        @param question_number: question id
+        @return: (float) score
+        """
         result = self.prestatiemetingresult_set.get(question_id=question_number)
         return result.answer.gradation.score
 
     def get_results(self):
+        """
+        Return the totalscore and timestamp at which the prestatiemeting finished
+        @return: dictionary where x value is a datetime and y value is the score ON
+        """
         return {'x': self.date_finished, 'y': self.get_score_on()}
 
 

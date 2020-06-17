@@ -9,19 +9,11 @@ from dateutil.relativedelta import relativedelta
 from data.models.project import ProjectFase, Project
 from data.models.sources import Sap, Ultimo
 
-"""
-These functions get called from the VPI model. The function signatures are saved in the model and called by get_value().
-Functions that are meant to provide data for a ChartJs object return a dictionary containing label and data. Other 
-functions return float values.
-"""
-
 
 def klanttevredenheid(project):
     """
     Calculate the average klanttevredenheid.
-    @param filters:
-    @param interval:
-    @param action:
+    @param project: project object
     @return: average klanttevredenheid score in float
     """
     filters = {'filled_on__isnull': False, 'filled_og__isnull': False}

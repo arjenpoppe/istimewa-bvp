@@ -8,6 +8,11 @@ from data.models.prestatiemeting import PrestatiemetingConfig, Prestatiemeting, 
 
 
 def export_prestatiemeting(prestatiemeting_id):
+    """
+    Excel generator for prestatiemeting forms
+    @param prestatiemeting_id: id of the prestatiemeting
+    @return: Excel workbook
+    """
     pm = get_object_or_404(Prestatiemeting, id=prestatiemeting_id)
     questions = pm.get_questions_on()
     themes = pm.get_distinct_themes_on()
@@ -121,6 +126,11 @@ def export_prestatiemeting(prestatiemeting_id):
 
 
 def prestatiemeting_report(prestatiemeting_id):
+    """
+    Method to generate Excel report for a prestatiemeting
+    @param prestatiemeting_id: the id of the prestatiemeting
+    @return: Excel workbook
+    """
     # required data
     prestatiemeting = Prestatiemeting.objects.get(pk=prestatiemeting_id)
     results_on = PrestatiemetingResult.objects.filter(prestatiemeting=prestatiemeting, question__about='ON')

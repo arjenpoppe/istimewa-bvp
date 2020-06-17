@@ -16,6 +16,11 @@ def index(request):
 @login_required
 @permission_required('perms.view_dashboard')
 def search(request):
+    """
+    Page on which VPI's are shown and can be searched
+    @param request: http request object
+    @return: VPI search view
+    """
     ctx = {}
     url_parameter = request.GET.get("q")
 
@@ -37,6 +42,12 @@ def search(request):
 
 
 def details(request, vpi_id):
+    """
+    Detail page for individual VPIs
+    @param request: http request object
+    @param vpi_id: VPI id
+    @return: VPI detail view
+    """
     projects = Project.objects.all()
     vpi = VPI.objects.get(pk=vpi_id)
 
@@ -63,9 +74,3 @@ def details(request, vpi_id):
         'data': data
     }
     return render(request, 'vpi/detail_prestatiemeting.html', context=context)
-
-    # def get_queryset(self):
-    #     """
-    #     Excludes any questions that aren't published yet.
-    #     """
-    #     return VPI.objects.filter(pub_date__lte=timezone.now())

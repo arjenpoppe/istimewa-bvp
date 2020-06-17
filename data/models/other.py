@@ -12,14 +12,30 @@ class DataContainer:
         self.model = apps.get_model(app_label='data', model_name=model_name)
 
     def apply_filters(self, filters):
+        """
+        Apply filters so Datacontainer object
+        @param filters: Filters in dictionary format
+        """
         self._data = self.model.objects.filter(**filters)
 
     def annotate(self, annotation):
+        """
+        Apply annotation to datacontainer object
+        @param annotation: annotation in dictionary format
+        """
         self._data = self._data.annotate(**annotation)
 
     def aggregate(self, aggregation):
+        """
+        Apply aggregation to datacontainer object
+        @param aggregation: aggregation in dictionary format
+        """
         self._data = self._data.aggregate(**aggregation)
 
     @property
     def data(self):
+        """
+        data property of datacontainer object
+        @return: Queryset
+        """
         return self._data

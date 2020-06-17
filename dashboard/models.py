@@ -119,25 +119,6 @@ class DashboardObject(models.Model):
                     return 'danger'
 
 
-class FilterObject(models.Model):
-    dashboard_object = models.ForeignKey(DashboardObject, on_delete=models.CASCADE)
-    filter_by = models.CharField(max_length=100)
-    filter_value = None
-    objects = InheritanceManager()
-
-
-class FilterObjectBoolean(FilterObject):
-    filter_value = models.BooleanField()
-
-
-class FilterObjectString(FilterObject):
-    filter_value = models.CharField(max_length=100)
-
-
-class FilterObjectDateTime(FilterObject):
-    filter_value = models.DateTimeField()
-
-
 class Report(models.Model):
     name = models.CharField(max_length=20)
     description = models.TextField(null=True, blank=True)

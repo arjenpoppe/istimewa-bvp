@@ -76,6 +76,11 @@ class VPI(models.Model):
             return None
 
     def get_color(self, value):
+        """
+        Get color to reflect the status of a VPI
+        @param value: value for VPI
+        @return: color ('danger'/'warning'/'success')
+        """
         target = self.vpitarget_set.get(project__isnull=True)
         upper_limit = target.upper_limit
         lower_limit = target.lower_limit

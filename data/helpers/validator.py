@@ -4,6 +4,11 @@ from data.models.prestatiemeting import Prestatiemeting, PrestatiemetingQuestion
 
 
 def validate_prestatiemeting_import(sheet):
+    """
+    Method to validate a prestatiemeting form filled by OG
+    @param sheet: Excel datasheet
+    @return: Error or None
+    """
     try:
         prestatiemeting_id = int(sheet.cell_value(0, 0).split('=')[1])
         prestatiemeting = Prestatiemeting.objects.get(pk=prestatiemeting_id)

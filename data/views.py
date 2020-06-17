@@ -22,13 +22,12 @@ from .resources import UltimoResource, SapResource
 
 @login_required
 @permission_required('perms.input_datafile')
-def index(request):
-    return render(request, 'data/index.html')
-
-
-@login_required
-@permission_required('perms.input_datafile')
 def upload(request):
+    """
+    Upload view
+    @param request: http request object
+    @return: Upload view
+    """
     if request.method == 'POST':
         if not request.FILES['datafile'] is None:
             if request.POST.get('source') == 'prestatiemeting':
@@ -45,6 +44,10 @@ def upload(request):
 
 
 def upload_sap(request):
+    """
+    Adapt SAP column headers and Upload to database.
+    @param request: http request object
+    """
     file = request.FILES['datafile']
     data = pd.read_excel(file)
 
@@ -96,6 +99,10 @@ def upload_sap(request):
 
 
 def save_project_activiteiten(project):
+    """
+    Extract all project activities from Sap import and save them to database.
+    @param project: project object to link to the project activity
+    """
     unique_activiteit_codes = Sap.objects.order_by('object').values('object', 'objectomschrijving').distinct()
 
     for data in unique_activiteit_codes:
@@ -106,8 +113,8 @@ def save_project_activiteiten(project):
 def upload_ultimo(request):
     """
     Handle ultimo excel sheet.
-    @param request:
-    @return:
+    @param request: http request object
+    @return: redirect to upload page on successful upload
     """
     resource = UltimoResource()
     dataset = Dataset()
@@ -126,7 +133,10 @@ def upload_ultimo(request):
 
 
 def upload_prestatiemeting(request):
-
+    """
+    Upload function for prestatiemeting Excel forms
+    @param request: http request object
+    """
     data = request.FILES['datafile']
     book = xlrd.open_workbook(file_contents=data.read())
     sheet = book.sheet_by_index(0)
@@ -156,6 +166,11 @@ def upload_prestatiemeting(request):
 @login_required
 @permission_required('perms.view_forms')
 def forms(request):
+    """
+    Overview for forms and prestatiemetingen
+    @param request: http request object
+    @return: forms view
+    """
     if request.POST:
         if 'prestatiemeting_upload' in request.POST:
             redirect('data:upload')
@@ -187,6 +202,12 @@ def forms(request):
 @login_required
 @permission_required('perms.view_forms')
 def prestatiemeting_config(request, prestatiemeting_id):
+    """
+    View for configuring a prestatiemeting
+    @param request: http request object
+    @param prestatiemeting_id: prestatiemeting id
+    @return: config view
+    """
     if request.POST:
         PrestatiemetingConfig.objects.filter(prestatiemeting_id=prestatiemeting_id).delete()
 
@@ -203,6 +224,11 @@ def prestatiemeting_config(request, prestatiemeting_id):
 
 
 def get_prestatiemetingen(request):
+    """
+    Function to return prestatiemetingen through Ajax request
+    @param request: http request object
+    @return: JsonResponse
+    """
     project = Project.objects.get(pk=request.GET.get('project_number', None))
     numbers = []
     prestatiemetingen = Prestatiemeting.objects.filter(project=project)
@@ -219,6 +245,12 @@ def get_prestatiemetingen(request):
 @login_required
 @permission_required('perms.view_forms')
 def forms_detail(request, form_id):
+    """
+    View to show form
+    @param request: http request object
+    @param form_id: id of the form
+    @return: forms view
+    """
     form = get_object_or_404(Form, pk=form_id)
     return render(request, 'data/forms_detail.html', {'form': form})
 
@@ -226,6 +258,12 @@ def forms_detail(request, form_id):
 @login_required
 @permission_required('perms.view_forms')
 def prestatiemeting(request, prestatiemeting_id):
+    """
+    View to show prestatiemeting form
+    @param request: http request object
+    @param prestatiemeting_id: prestatiemeting id
+    @return: prestatiemeting view
+    """
     pm = get_object_or_404(Prestatiemeting, pk=prestatiemeting_id)
     questions = pm.get_questions_og()
 
@@ -270,6 +308,12 @@ def prestatiemeting(request, prestatiemeting_id):
 @login_required
 @permission_required('perms.view_forms')
 def export_excel(request, prestatiemeting_id):
+    """
+    Function to download prestatiemeting Excel form
+    @param request: http request object
+    @param prestatiemeting_id: prestatiemeting id
+    @return: response
+    """
     output = export_prestatiemeting(prestatiemeting_id)
     output.seek(0)
 
@@ -284,6 +328,11 @@ def export_excel(request, prestatiemeting_id):
 
 
 def projects_view(request):
+    """
+    Overview page for projects
+    @param request: http request object
+    @return: projcts overview view
+    """
     projects = Project.objects.all()
     return render(request, 'data/projects.html', {'projects': projects})
 
